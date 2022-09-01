@@ -1,0 +1,31 @@
+http:
+  port: 8080
+
+mysql:
+  username: "test_read_only"
+  passport: "db#01^st$Post"
+  host: "rm-2zem14s80lyu5c4z7.mysql.rds.aliyuncs.com"
+  port: 3306
+  dbname: "kunpeng"
+  charset: "utf8mb4"
+
+mongodb:
+  dsn: "mongodb://kunpeng:kYjJpU8BYvb4EJ9x@dds-8vb14448e6c8d6241844-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/kunpeng?replicaSet=mgset-509843895"
+  database: "kunpeng"
+
+jwt:
+  issuer: "kp"
+  secret: "kp#123"
+
+prometheus:
+  host: "172.17.101.189"
+  port: 9090
+
+kafka:
+  host: "172.17.101.188:9092"
+  topic: "StressTestData"
+
+es:
+  host: "http://172.17.101.191:9200"
+  username: "elastic"
+  password: "ZSrfx4R6ICa3skGBpCdf"
