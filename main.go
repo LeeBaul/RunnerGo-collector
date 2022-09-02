@@ -26,13 +26,13 @@ func main() {
 		}
 	}()
 
-	partitionConsumer, err := consumer.ConsumePartition(conf.Conf.Kafka.Topic, 0, sarama.OffsetNewest)
+	partition, err := consumer.ConsumePartition(conf.Conf.Kafka.Topic, 0, sarama.OffsetNewest)
 	if err != nil {
 		panic(err)
 	}
 
 	defer func() {
-		if err := partitionConsumer.Close(); err != nil {
+		if err := partition.Close(); err != nil {
 			log.Fatalln(err)
 		}
 	}()
@@ -44,10 +44,11 @@ func main() {
 	signal.Notify(signals, os.Interrupt)
 
 	consumed := 0
+
 ConsumerLoop:
 	for {
 		select {
-		case msg := <-partitionConsumer.Messages():
+		case msg := <-partition.Messages():
 			log.Printf("%+v", msg)
 			log.Printf("Consumed message offset %d\n", msg.Offset)
 			consumed++
