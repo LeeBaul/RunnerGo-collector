@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,7 @@ import (
 
 	"kp-collector/internal"
 	"kp-collector/internal/pkg/conf"
+	"kp-collector/internal/pkg/handler"
 )
 
 func main() {
@@ -49,7 +51,12 @@ ConsumerLoop:
 	for {
 		select {
 		case msg := <-partition.Messages():
-			log.Printf("%+v", msg)
+			if msg.Topic != conf.Conf.Kafka.Topic {
+				continue
+			}
+
+			handler.SaveEs(context.TODO(), msg.Value)
+
 			log.Printf("Consumed message offset %d\n", msg.Offset)
 			consumed++
 		case <-signals:
