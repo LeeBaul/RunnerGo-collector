@@ -1,17 +1,17 @@
 package main
 
 import (
-	"context"
-	"fmt"
+	"github.com/Shopify/sarama"
+	"kp-collector/internal"
+	"kp-collector/internal/pkg"
+	"kp-collector/internal/pkg/conf"
+	"kp-collector/internal/pkg/dal/es"
+	log2 "kp-collector/internal/pkg/log"
+	"kp-collector/internal/pkg/server"
 	"log"
 	"os"
 	"os/signal"
-
-	"github.com/Shopify/sarama"
-
-	"kp-collector/internal"
-	"kp-collector/internal/pkg/conf"
-	"kp-collector/internal/pkg/handler"
+	"syscall"
 )
 
 func main() {
@@ -27,42 +27,14 @@ func main() {
 			log.Fatalln(err)
 		}
 	}()
+	pkg.SendHeartBeat("kpcontroller.apipost.cn:443", 1)
+	es.Exist = es.Exists(conf.Conf.ES.Index)
+	go server.Execute(conf.Conf.Kafka.Topic, consumer)
 
-	partition, err := consumer.ConsumePartition(conf.Conf.Kafka.Topic, 0, sarama.OffsetNewest)
-	if err != nil {
-		panic(err)
-	}
+	/// 接收终止信号
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	log2.Logger.Info("注销成功")
 
-	defer func() {
-		if err := partition.Close(); err != nil {
-			log.Fatalln(err)
-		}
-	}()
-
-	fmt.Println("kafka consumer initialized")
-
-	// Trap SIGINT to trigger a shutdown.
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt)
-
-	consumed := 0
-
-ConsumerLoop:
-	for {
-		select {
-		case msg := <-partition.Messages():
-			if msg.Topic != conf.Conf.Kafka.Topic {
-				continue
-			}
-
-			handler.SaveEs(context.TODO(), msg.Value)
-
-			log.Printf("Consumed message offset %d\n", msg.Offset)
-			consumed++
-		case <-signals:
-			break ConsumerLoop
-		}
-	}
-
-	log.Printf("Consumed: %d\n", consumed)
 }

@@ -3,7 +3,6 @@ package conf
 import (
 	"flag"
 	"fmt"
-
 	"github.com/spf13/viper"
 )
 
@@ -61,11 +60,12 @@ type ES struct {
 	Host     string `yaml:"host"`
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
+	Index    string `yaml:"index"`
 }
 
 func MustInitConf() {
 	var configFile string
-	flag.StringVar(&configFile, "c", "./configs/dev.yaml", "app config file.")
+	flag.StringVar(&configFile, "c", "./dev.yaml", "app config file.")
 	if !flag.Parsed() {
 		flag.Parse()
 	}

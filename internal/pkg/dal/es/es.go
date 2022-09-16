@@ -1,30 +1,59 @@
 package es
 
 import (
+	"context"
 	"fmt"
-
 	"github.com/olivere/elastic/v7"
-
-	"kp-collector/internal/pkg/conf"
+	"kp-collector/internal/pkg/dal/kao"
+	log2 "kp-collector/internal/pkg/log"
+	"log"
+	"os"
+	"time"
 )
 
-var (
-	esc *elastic.Client
-)
+var Client *elastic.Client
+var Exist bool
 
-func InitElasticSearchClient() {
-	var err error
-	esc, err = elastic.NewClient(
-		elastic.SetURL(conf.Conf.ES.Host),
-		elastic.SetBasicAuth(conf.Conf.ES.Username, conf.Conf.ES.Password))
-
+func InitEsClient(host, user, password string) {
+	Client, _ = elastic.NewClient(
+		elastic.SetURL(host),
+		elastic.SetSniff(false),
+		elastic.SetBasicAuth(user, password),
+		elastic.SetErrorLog(log.New(os.Stdout, "APP", log.Lshortfile)),
+		elastic.SetHealthcheckInterval(30*time.Second),
+	)
+	_, _, err := Client.Ping(host).Do(context.Background())
 	if err != nil {
-		panic(err)
+		panic(fmt.Sprintf("es连接失败: %s", err))
 	}
-
-	fmt.Println("es initialized")
+	return
 }
 
-func Client() *elastic.Client {
-	return esc
+func InsertTestData(sceneTestResultDataMsg *kao.SceneTestResultDataMsg, index string) {
+
+	if Exist {
+		_, err := Client.Index().Index(index).BodyJson(sceneTestResultDataMsg).Do(context.Background())
+		if err != nil {
+			log2.Logger.Error("es写入数据失败", err)
+			return
+		}
+	}
+	if !Exist {
+		_, err := Client.CreateIndex(index).BodyJson(sceneTestResultDataMsg).Do(context.Background())
+		if err != nil {
+			log2.Logger.Error("es写入数据失败", err)
+			return
+		}
+		Exist = true
+	}
+
+}
+
+func Exists(index string) bool {
+	log2.Logger.Error(index, "11111111111111111")
+	exist, err := Client.IndexExists(index).Do(context.Background())
+	if err != nil {
+		panic(fmt.Sprintf("es连接失败: %s", err))
+	}
+	return exist
 }
