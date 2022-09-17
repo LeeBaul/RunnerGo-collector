@@ -50,7 +50,6 @@ func InsertTestData(sceneTestResultDataMsg *kao.SceneTestResultDataMsg, index st
 }
 
 func Exists(index string) bool {
-	log2.Logger.Error(index, "11111111111111111")
 	exist, err := Client.IndexExists(index).Do(context.Background())
 	if err != nil {
 		panic(fmt.Sprintf("es连接失败: %s", err))

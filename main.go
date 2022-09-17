@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/Shopify/sarama"
 	"kp-collector/internal"
-	"kp-collector/internal/pkg"
 	"kp-collector/internal/pkg/conf"
 	"kp-collector/internal/pkg/dal/es"
 	log2 "kp-collector/internal/pkg/log"
@@ -27,7 +26,6 @@ func main() {
 			log.Fatalln(err)
 		}
 	}()
-	pkg.SendHeartBeat("kpcontroller.apipost.cn:443", 1)
 	es.Exist = es.Exists(conf.Conf.ES.Index)
 	go server.Execute(conf.Conf.Kafka.Topic, consumer)
 
