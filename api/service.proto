@@ -1,4 +1,7 @@
 syntax = "proto3";
+
+package service;
+
 option go_package="app/services";
 
 message RegisterMachineReq {
@@ -26,13 +29,12 @@ message RunStressResp {
 }
 
 message NotifyStopStressReq {
-  string Region = 1;
-  string IP = 2;
-  int32 Port = 3;
+  int64 ReportID = 1;
 }
 
 message NotifyStopStressResp {
-
+  int32 Code = 1;
+  string Msg = 2;
 }
 
 service KpController {

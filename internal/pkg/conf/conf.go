@@ -24,7 +24,8 @@ type Http struct {
 }
 
 type GRPC struct {
-	Port int `yaml:"port"`
+	Port int    `yaml:"port"`
+	Host string `yaml:"host"`
 }
 
 type MySQL struct {

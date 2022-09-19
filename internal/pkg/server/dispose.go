@@ -1,13 +1,21 @@
 package server
 
 import (
+	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"github.com/Shopify/sarama"
+	"github.com/pkg/errors"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
+	services "kp-collector/api"
 	"kp-collector/internal/pkg/conf"
 	"kp-collector/internal/pkg/dal/es"
 	"kp-collector/internal/pkg/dal/kao"
 	log2 "kp-collector/internal/pkg/log"
 	"sort"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -150,6 +158,7 @@ Loop:
 				sceneTestResultDataMsg.End = true
 				es.InsertTestData(sceneTestResultDataMsg, index)
 				log2.Logger.Info(sceneTestResultDataMsg.ReportId, "报告结束")
+				SendStopMsg(conf.Conf.GRPC.Host, sceneTestResultDataMsg.ReportId)
 				return
 			}
 
@@ -171,9 +180,31 @@ Loop:
 				sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
 				sceneTestResultDataMsg.End = false
 				es.InsertTestData(sceneTestResultDataMsg, index)
-
 			}
 
 		}
 	}
+}
+
+func SendStopMsg(host, reportId string) {
+
+	ctx := context.TODO()
+
+	systemRoots, err := x509.SystemCertPool()
+	if err != nil {
+		panic(errors.Wrap(err, "cannot load root CA certs"))
+	}
+	creds := credentials.NewTLS(&tls.Config{
+		RootCAs: systemRoots,
+	})
+
+	conn, err := grpc.Dial(host, grpc.WithTransportCredentials(creds))
+
+	grpcClient := services.NewKpControllerClient(conn)
+
+	req := new(services.NotifyStopStressReq)
+	req.ReportID, _ = strconv.ParseInt(reportId, 10, 64)
+
+	_, err = grpcClient.NotifyStopStress(ctx, req)
+
 }

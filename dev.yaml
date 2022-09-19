@@ -30,3 +30,6 @@ es:
   username: "elastic"
   password: "ZSrfx4R6ICa3skGBpCdf"
   index: "report"
+
+grpc:
+  host: "kpcontroller.apipost.cn:443"
