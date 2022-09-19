@@ -53,7 +53,8 @@ type SceneTestResultDataMsg struct {
 	SceneId    int64                            `json:"scene_id" bson:"scene_id"`   // 场景
 	SceneName  string                           `json:"scene_name" bson:"scene_name"`
 	Results    map[string]*ApiTestResultDataMsg `json:"results" bson:"results"`
-	Machine    map[string]int64
+	Machine    map[string]int64                 `json:"machine" bson:"machine"`
+	TimeStamp  int64                            `json:"time_stamp" bson:"time_stamp"`
 }
 
 type RequestTimeList []uint64

@@ -12,7 +12,6 @@ import (
 )
 
 var Client *elastic.Client
-var Exist bool
 
 func InitEsClient(host, user, password string) {
 	Client, _ = elastic.NewClient(
@@ -31,28 +30,21 @@ func InitEsClient(host, user, password string) {
 
 func InsertTestData(sceneTestResultDataMsg *kao.SceneTestResultDataMsg, index string) {
 
-	if Exist {
-		_, err := Client.Index().Index(index).BodyJson(sceneTestResultDataMsg).Do(context.Background())
-		if err != nil {
-			log2.Logger.Error("es写入数据失败", err)
-			return
-		}
-	}
-	if !Exist {
-		_, err := Client.CreateIndex(index).BodyJson(sceneTestResultDataMsg).Do(context.Background())
-		if err != nil {
-			log2.Logger.Error("es写入数据失败", err)
-			return
-		}
-		Exist = true
-	}
-
-}
-
-func Exists(index string) bool {
 	exist, err := Client.IndexExists(index).Do(context.Background())
 	if err != nil {
 		panic(fmt.Sprintf("es连接失败: %s", err))
 	}
-	return exist
+	if !exist {
+		_, err := Client.CreateIndex(index).Do(context.Background())
+		if err != nil {
+			log2.Logger.Error("es创建索引", index, "失败", err)
+			return
+		}
+	}
+	_, err = Client.Index().Index(index).BodyJson(sceneTestResultDataMsg).Do(context.Background())
+	if err != nil {
+		log2.Logger.Error("es写入数据失败", err)
+		return
+	}
+
 }

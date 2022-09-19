@@ -146,6 +146,7 @@ Loop:
 					}
 
 				}
+				sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
 				sceneTestResultDataMsg.End = true
 				es.InsertTestData(sceneTestResultDataMsg, index)
 				log2.Logger.Info(sceneTestResultDataMsg.ReportId, "报告结束")
@@ -167,6 +168,7 @@ Loop:
 					}
 
 				}
+				sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
 				sceneTestResultDataMsg.End = false
 				es.InsertTestData(sceneTestResultDataMsg, index)
 
