@@ -2,6 +2,7 @@ package es
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/olivere/elastic/v7"
 	"kp-collector/internal/pkg/dal/kao"
@@ -34,7 +35,8 @@ func InsertTestData(sceneTestResultDataMsg *kao.SceneTestResultDataMsg) {
 	index := strconv.FormatInt(sceneTestResultDataMsg.TeamId, 10)
 	exist, err := Client.IndexExists(index).Do(context.Background())
 	if err != nil {
-		panic(fmt.Sprintf("es连接失败: %s", err))
+		log2.Logger.Error(fmt.Sprintf("es连接失败: %s", err))
+		return
 	}
 	if !exist {
 		_, err := Client.CreateIndex(index).Do(context.Background())
@@ -48,5 +50,7 @@ func InsertTestData(sceneTestResultDataMsg *kao.SceneTestResultDataMsg) {
 		log2.Logger.Error("es写入数据失败", err)
 		return
 	}
+	msg, _ := json.Marshal(sceneTestResultDataMsg)
+	log2.Logger.Info(string(msg))
 
 }

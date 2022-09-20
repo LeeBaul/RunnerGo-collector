@@ -70,6 +70,7 @@ Loop:
 			}
 
 			err := json.Unmarshal(msg.Value, &resultDataMsg)
+			log2.Logger.Info(string(msg.Value))
 			if err != nil {
 				log2.Logger.Error(err)
 				break Loop
@@ -206,5 +207,9 @@ func SendStopMsg(host, reportId string) {
 	req.ReportID, _ = strconv.ParseInt(reportId, 10, 64)
 
 	_, err = grpcClient.NotifyStopStress(ctx, req)
-
+	if err != nil {
+		log2.Logger.Error("发送停止任务失败", err)
+		return
+	}
+	log2.Logger.Info(reportId, "任务结束， 消息已发送")
 }
