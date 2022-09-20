@@ -57,7 +57,6 @@ func ReceiveMessage(partition sarama.PartitionConsumer, consumerMap *sync.Map, p
 		sceneTestResultDataMsg = new(kao.SceneTestResultDataMsg)
 		resultDataMsg          = kao.ResultDataMsg{}
 		requestTimeMap         = make(map[string]kao.RequestTimeList)
-		index                  = conf.Conf.ES.Index
 		target                 = int64(0)
 	)
 	ticker := time.NewTicker(1 * time.Second)
@@ -104,6 +103,7 @@ Loop:
 			if sceneTestResultDataMsg.SceneName == "" {
 				sceneTestResultDataMsg.SceneName = resultDataMsg.SceneName
 			}
+			sceneTestResultDataMsg.TeamId = resultDataMsg.TeamId
 			switch resultDataMsg.End {
 			case true:
 				target = target - 1
@@ -156,7 +156,7 @@ Loop:
 				}
 				sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
 				sceneTestResultDataMsg.End = true
-				es.InsertTestData(sceneTestResultDataMsg, index)
+				es.InsertTestData(sceneTestResultDataMsg)
 				log2.Logger.Info(sceneTestResultDataMsg.ReportId, "报告结束")
 				SendStopMsg(conf.Conf.GRPC.Host, sceneTestResultDataMsg.ReportId)
 				return
@@ -179,7 +179,7 @@ Loop:
 				}
 				sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
 				sceneTestResultDataMsg.End = false
-				es.InsertTestData(sceneTestResultDataMsg, index)
+				es.InsertTestData(sceneTestResultDataMsg)
 			}
 
 		}

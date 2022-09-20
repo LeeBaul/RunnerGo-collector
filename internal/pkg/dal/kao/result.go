@@ -3,6 +3,7 @@ package kao
 // ResultDataMsg 请求结果数据结构
 type ResultDataMsg struct {
 	End                   bool    `json:"end" bson:"end"` // 结束标记
+	TeamId                int64   `json:"team_id" bson:"team_id"`
 	ReportId              string  `json:"report_id" bson:"report_id"`
 	ReportName            string  `json:"report_name" bson:"report_name"`
 	MachineNum            int64   `json:"machine_num" bson:"machine_num"` // 使用的压力机数量
@@ -46,6 +47,7 @@ type ApiTestResultDataMsg struct {
 
 type SceneTestResultDataMsg struct {
 	End        bool                             `json:"end" bson:"end"`
+	TeamId     int64                            `json:"team_id" bson:"team_id"`
 	ReportId   string                           `json:"report_id" bson:"report_id"`
 	ReportName string                           `json:"report_name" bson:"report_name"`
 	PlanId     int64                            `json:"plan_id" bson:"plan_id"`     // 任务ID

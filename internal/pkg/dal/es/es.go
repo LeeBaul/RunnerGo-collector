@@ -8,6 +8,7 @@ import (
 	log2 "kp-collector/internal/pkg/log"
 	"log"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -28,8 +29,9 @@ func InitEsClient(host, user, password string) {
 	return
 }
 
-func InsertTestData(sceneTestResultDataMsg *kao.SceneTestResultDataMsg, index string) {
+func InsertTestData(sceneTestResultDataMsg *kao.SceneTestResultDataMsg) {
 
+	index := strconv.FormatInt(sceneTestResultDataMsg.TeamId, 10)
 	exist, err := Client.IndexExists(index).Do(context.Background())
 	if err != nil {
 		panic(fmt.Sprintf("es连接失败: %s", err))

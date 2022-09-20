@@ -1,5 +1,5 @@
 http:
-  port: 8080
+  port: 20125
 
 mysql:
   username: "test_read_only"
