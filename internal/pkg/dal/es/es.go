@@ -5,11 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/olivere/elastic/v7"
+	"kp-collector/internal/pkg/conf"
 	"kp-collector/internal/pkg/dal/kao"
 	log2 "kp-collector/internal/pkg/log"
 	"log"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -32,7 +32,7 @@ func InitEsClient(host, user, password string) {
 
 func InsertTestData(sceneTestResultDataMsg *kao.SceneTestResultDataMsg) {
 
-	index := strconv.FormatInt(sceneTestResultDataMsg.TeamId, 10)
+	index := conf.Conf.ES.Index
 	exist, err := Client.IndexExists(index).Do(context.Background())
 	if err != nil {
 		log2.Logger.Error(fmt.Sprintf("es连接失败: %s", err))
