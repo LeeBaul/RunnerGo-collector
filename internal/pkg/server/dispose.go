@@ -24,14 +24,12 @@ func Execute(host string) {
 		}
 	}()
 	for {
-		log2.Logger.Error("开始消费。。。。。。。。。。。。。。")
 		// 获取所有的topic
 		topics, topicsErr := client.Topics()
 		if topicsErr != nil {
 			log2.Logger.Error("获取topics失败：", err)
 			continue
 		}
-		log2.Logger.Info("kafka", topics)
 		index := 0
 		for _, topic := range topics {
 			if _, ok := topicMap.Load(topic); !ok {
@@ -48,7 +46,6 @@ func Execute(host string) {
 					}
 					continue
 				}
-				log2.Logger.Error(index)
 				index++
 				topicMap.Store(topic, true)
 				for _, p := range partitions {
