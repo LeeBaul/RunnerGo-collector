@@ -1,12 +1,10 @@
 package main
 
 import (
-	"github.com/Shopify/sarama"
 	"kp-collector/internal"
 	"kp-collector/internal/pkg/conf"
 	log2 "kp-collector/internal/pkg/log"
 	"kp-collector/internal/pkg/server"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,18 +13,7 @@ import (
 func main() {
 	internal.InitProjects()
 
-	consumer, err := sarama.NewConsumer([]string{conf.Conf.Kafka.Host}, sarama.NewConfig())
-	if err != nil {
-		panic(err)
-	}
-
-	defer func() {
-		if err := consumer.Close(); err != nil {
-			log.Fatalln(err)
-		}
-	}()
-
-	go server.Execute(conf.Conf.Kafka.Topic, consumer)
+	go server.Execute(conf.Conf.Kafka.Host)
 
 	/// 接收终止信号
 	quit := make(chan os.Signal)
