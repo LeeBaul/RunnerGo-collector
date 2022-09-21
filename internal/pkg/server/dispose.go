@@ -73,8 +73,12 @@ func ReceiveMessage(partition sarama.PartitionConsumer, consumerMap *sync.Map, p
 	if partition == nil || consumerMap == nil {
 		return
 	}
-	var machineMap *sync.Map
+	var machineMap = new(sync.Map)
 	for msg := range partition.Messages() {
+		machineMap.Range(func(key, value any) bool {
+			return true
+		})
+
 		err := es.InsertTestData(msg.Value, machineMap)
 		if err != nil {
 			log2.Logger.Error("es写入失败:", err)
