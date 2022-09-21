@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
 	"fmt"
 	"github.com/olivere/elastic/v7"
 	"github.com/pkg/errors"
@@ -38,17 +37,8 @@ func InitEsClient(host, user, password string) {
 	return
 }
 
-func InsertTestData(value []byte, machineMap *sync.Map) (err error) {
-	var resultDataMsg = kao.ResultDataMsg{}
-	err = json.Unmarshal(value, &resultDataMsg)
-	if err != nil {
-		log2.Logger.Error("kafka消息转换失败：", err)
-		return
-	}
-	if resultDataMsg.ReportId == "" {
-		log2.Logger.Error(fmt.Sprintf("es连接失败: %s", err))
-		return errors.New("报告id不能为空")
-	}
+func InsertTestData(sceneTestResultDataMsg kao.SceneTestResultDataMsg, machineMap *sync.Map) (err error) {
+
 	index := conf.Conf.ES.Index
 	exist, err := Client.IndexExists(index).Do(context.Background())
 	if err != nil {
@@ -62,25 +52,14 @@ func InsertTestData(value []byte, machineMap *sync.Map) (err error) {
 			return
 		}
 	}
-	if machine, ok := machineMap.Load(resultDataMsg.ReportId); !ok {
-		machineMap.Store(resultDataMsg.ReportId, resultDataMsg.MachineNum+1)
-
-	} else {
-		if resultDataMsg.End == true && machine.(int64) > 1 {
-			machineMap.Store(resultDataMsg.ReportId, machine.(int64)-1)
-		}
-		machineNum, is := machineMap.Load(resultDataMsg.ReportId)
-		if is && machineNum.(int64) == 1 && resultDataMsg.End == true {
-			log2.Logger.Info(resultDataMsg.ReportId, "报告结束")
-			SendStopMsg(conf.Conf.GRPC.Host, resultDataMsg.ReportId)
-		} else {
-			return
-		}
-	}
-	_, err = Client.Index().Index(index).BodyString(string(value)).Do(context.Background())
+	_, err = Client.Index().Index(index).BodyJson(sceneTestResultDataMsg).Do(context.Background())
 	if err != nil {
 		log2.Logger.Error("es写入数据失败", err)
 		return
+	}
+	fmt.Println("sceneTestResultDataMsg.End", sceneTestResultDataMsg.End)
+	if sceneTestResultDataMsg.End {
+		SendStopMsg(conf.Conf.GRPC.Host, sceneTestResultDataMsg.ReportId)
 	}
 	return
 }
