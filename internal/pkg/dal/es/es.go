@@ -16,7 +16,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"sync"
 	"time"
 )
 
@@ -37,7 +36,7 @@ func InitEsClient(host, user, password string) {
 	return
 }
 
-func InsertTestData(sceneTestResultDataMsg kao.SceneTestResultDataMsg, machineMap *sync.Map) (err error) {
+func InsertTestData(sceneTestResultDataMsg kao.SceneTestResultDataMsg) (err error) {
 
 	index := conf.Conf.ES.Index
 	exist, err := Client.IndexExists(index).Do(context.Background())
@@ -57,7 +56,6 @@ func InsertTestData(sceneTestResultDataMsg kao.SceneTestResultDataMsg, machineMa
 		log2.Logger.Error("es写入数据失败", err)
 		return
 	}
-	fmt.Println("sceneTestResultDataMsg.End", sceneTestResultDataMsg.End)
 	if sceneTestResultDataMsg.End {
 		SendStopMsg(conf.Conf.GRPC.Host, sceneTestResultDataMsg.ReportId)
 	}
