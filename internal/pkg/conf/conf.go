@@ -20,7 +20,7 @@ type Config struct {
 }
 
 type Http struct {
-	Port int `yaml:"port"`
+	Host string `yaml:"host"`
 }
 
 type GRPC struct {
