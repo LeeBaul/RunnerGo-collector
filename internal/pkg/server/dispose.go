@@ -198,9 +198,15 @@ Loop:
 				sceneTestResultDataMsg.Results[eventId].AvgRequestTime = sceneTestResultDataMsg.Results[eventId].TotalRequestTime / sceneTestResultDataMsg.Results[eventId].TotalRequestNum
 				sceneTestResultDataMsg.Results[eventId].MaxRequestTime = requestTimeList[len(requestTimeList)-1]
 				sceneTestResultDataMsg.Results[eventId].MinRequestTime = requestTimeList[0]
-				sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLine = kao.TimeLineCalculate(90, requestTimeList)
-				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLine = kao.TimeLineCalculate(95, requestTimeList)
-				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLine = kao.TimeLineCalculate(99, requestTimeList)
+				if 0 < sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine && sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine >= 100 {
+					sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine, requestTimeList)
+				}
+				sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLine = 90
+				sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLineValue = kao.TimeLineCalculate(90, requestTimeList)
+				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLine = 95
+				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLineValue = kao.TimeLineCalculate(95, requestTimeList)
+				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLine = 99
+				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLineValue = kao.TimeLineCalculate(99, requestTimeList)
 				if sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine != 0 {
 					sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine, requestTimeList)
 				}
