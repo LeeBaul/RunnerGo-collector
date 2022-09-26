@@ -86,7 +86,6 @@ Loop:
 		select {
 		case msg := <-partition.Messages():
 			err := json.Unmarshal(msg.Value, &resultDataMsg)
-			fmt.Println(string(msg.Value))
 			if err != nil {
 				log2.Logger.Error("kafka消息转换失败：", err)
 				break Loop
