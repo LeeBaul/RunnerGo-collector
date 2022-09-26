@@ -112,8 +112,8 @@ Loop:
 						sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLineValue = kao.TimeLineCalculate(90, requestTimeList)
 						sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLineValue = kao.TimeLineCalculate(95, requestTimeList)
 						sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLineValue = kao.TimeLineCalculate(99, requestTimeList)
-						if sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine != 0 {
-							sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine, requestTimeList)
+						if 0 < sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine && sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine <= 100 {
+							sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine, requestTimeList)
 						}
 						if sceneTestResultDataMsg.Results[eventId].TotalRequestTime != 0 {
 							qps := fmt.Sprintf("%.2f", float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)/(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)/1000))
@@ -181,7 +181,9 @@ Loop:
 			if sceneTestResultDataMsg.Results[resultDataMsg.EventId].SceneName == "" {
 				sceneTestResultDataMsg.Results[resultDataMsg.EventId].SceneName = resultDataMsg.SceneName
 			}
-			sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine = resultDataMsg.CustomRequestTimeLine
+			if resultDataMsg.PercentAge != 0 && resultDataMsg.PercentAge < 100 {
+				sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine = resultDataMsg.PercentAge
+			}
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].ReceivedBytes += resultDataMsg.ReceivedBytes
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].SendBytes += resultDataMsg.SendBytes
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].TotalRequestNum += 1
@@ -201,19 +203,15 @@ Loop:
 				sceneTestResultDataMsg.Results[eventId].AvgRequestTime = sceneTestResultDataMsg.Results[eventId].TotalRequestTime / sceneTestResultDataMsg.Results[eventId].TotalRequestNum
 				sceneTestResultDataMsg.Results[eventId].MaxRequestTime = requestTimeList[len(requestTimeList)-1]
 				sceneTestResultDataMsg.Results[eventId].MinRequestTime = requestTimeList[0]
-				if 0 < sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine && sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine >= 100 {
+				if 0 < sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine && sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine <= 100 {
 					sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine, requestTimeList)
 				}
 				sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLine = 90
-				sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLineValue = kao.TimeLineCalculate(90, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLine = 95
-				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLineValue = kao.TimeLineCalculate(95, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLine = 99
+				sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLineValue = kao.TimeLineCalculate(90, requestTimeList)
+				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLineValue = kao.TimeLineCalculate(95, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLineValue = kao.TimeLineCalculate(99, requestTimeList)
-				if sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine != 0 {
-					sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine, requestTimeList)
-				}
-
 				if sceneTestResultDataMsg.Results[eventId].TotalRequestTime != 0 {
 					qps := fmt.Sprintf("%.2f", float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)/(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)/1000))
 					sceneTestResultDataMsg.Results[eventId].Qps, _ = strconv.ParseFloat(qps, 64)
