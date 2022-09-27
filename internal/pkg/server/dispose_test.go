@@ -92,7 +92,7 @@ func TestExecute(t *testing.T) {
 				log2.Logger.Error("创建NewClusterAdmin失败：", errNewClusterAdmin)
 			}
 			if errDelete := ca.DeleteTopic(topic); errDelete != nil {
-				log2.Logger.Error("删除top：cctv1错误：", topic, errNewClusterAdmin)
+				fmt.Println("删除top：cctv1错误：", topic, errDelete)
 			}
 
 		}
