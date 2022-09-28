@@ -14,12 +14,15 @@ import (
 	"kp-collector/internal/pkg/dal/kao"
 	log2 "kp-collector/internal/pkg/log"
 	"log"
+	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
 var Client *elastic.Client
+var mapping = "{\"settings\": {\"index\": {\"max_result_window\": 20000000}}}"
 
 func InitEsClient(host, user, password string) {
 	Client, _ = elastic.NewClient(
@@ -47,12 +50,13 @@ func InsertTestData(sceneTestResultDataMsg kao.SceneTestResultDataMsg) (err erro
 		return
 	}
 	if !exist {
-		_, clientErr := Client.CreateIndex(index).Do(context.Background())
+		_, clientErr := Client.CreateIndex(index).BodyString(mapping).Do(context.Background())
 		if clientErr != nil {
 			log2.Logger.Error("es创建索引", index, "失败", err)
 			SendStopMsg(conf.Conf.GRPC.Host, sceneTestResultDataMsg.ReportId)
 			return
 		}
+
 	}
 
 	_, err = Client.Index().Index(index).BodyJson(sceneTestResultDataMsg).Do(context.Background())
@@ -96,4 +100,20 @@ func SendStopMsg(host, reportId string) {
 		return
 	}
 	log2.Logger.Info(reportId, "任务结束， 消息已发送")
+}
+
+func Post(url, body string) (err error) {
+
+	request, err := http.NewRequest("PUT", url, strings.NewReader(body))
+	if err != nil {
+		fmt.Println("http请求创建失败：   ", err)
+		return
+	}
+	client := &http.Client{}
+	_, err = client.Do(request)
+	if err != nil {
+		fmt.Println("http发送请求失败：    ", err)
+		return
+	}
+	return
 }
