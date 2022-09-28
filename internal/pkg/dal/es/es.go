@@ -38,22 +38,27 @@ func InitEsClient(host, user, password string) {
 
 func InsertTestData(sceneTestResultDataMsg kao.SceneTestResultDataMsg) (err error) {
 
-	index := conf.Conf.ES.Index
+	//index := conf.Conf.ES.Index
+	index := sceneTestResultDataMsg.ReportId
 	exist, err := Client.IndexExists(index).Do(context.Background())
 	if err != nil {
 		log2.Logger.Error(fmt.Sprintf("es连接失败: %s", err))
+		SendStopMsg(conf.Conf.GRPC.Host, sceneTestResultDataMsg.ReportId)
 		return
 	}
 	if !exist {
 		_, clientErr := Client.CreateIndex(index).Do(context.Background())
 		if clientErr != nil {
 			log2.Logger.Error("es创建索引", index, "失败", err)
+			SendStopMsg(conf.Conf.GRPC.Host, sceneTestResultDataMsg.ReportId)
 			return
 		}
 	}
+
 	_, err = Client.Index().Index(index).BodyJson(sceneTestResultDataMsg).Do(context.Background())
 	if err != nil {
 		log2.Logger.Error("es写入数据失败", err)
+		SendStopMsg(conf.Conf.GRPC.Host, sceneTestResultDataMsg.ReportId)
 		return
 	}
 	if sceneTestResultDataMsg.End {
