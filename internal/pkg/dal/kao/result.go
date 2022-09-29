@@ -21,8 +21,8 @@ type ResultDataMsg struct {
 	ErrorType      int64   `json:"error_type"`      // 错误类型：1. 请求错误；2. 断言错误
 	IsSucceed      bool    `json:"is_succeed"`      // 请求是否有错：true / false   为了计数
 	ErrorMsg       string  `json:"error_msg"`       // 错误信息
-	SendBytes      uint64  `json:"send_bytes"`      // 发送字节数
-	ReceivedBytes  uint64  `json:"received_bytes"`  // 接收字节数
+	SendBytes      float64 `json:"send_bytes"`      // 发送字节数
+	ReceivedBytes  float64 `json:"received_bytes"`  // 接收字节数
 	Timestamp      int64   `json:"timestamp"`
 }
 
@@ -51,8 +51,8 @@ type ApiTestResultDataMsg struct {
 	NinetyRequestTimeLineValue     float64 `json:"ninety_request_time_line_value"`
 	NinetyFiveRequestTimeLineValue float64 `json:"ninety_five_request_time_line_value"`
 	NinetyNineRequestTimeLineValue float64 `json:"ninety_nine_request_time_line_value"`
-	SendBytes                      uint64  `json:"send_bytes"`     // 发送字节数
-	ReceivedBytes                  uint64  `json:"received_bytes"` // 接收字节数
+	SendBytes                      float64 `json:"send_bytes"`     // 发送字节数
+	ReceivedBytes                  float64 `json:"received_bytes"` // 接收字节数
 	Qps                            float64 `json:"qps"`
 }
 
