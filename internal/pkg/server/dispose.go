@@ -206,8 +206,6 @@ Loop:
 				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLineValue = kao.TimeLineCalculate(99, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine, requestTimeList)
 				total := float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(time.Second)
-				log2.Logger.Debug("sceneTestResultDataMsg.Results[eventId].TotalRequestNum   ", sceneTestResultDataMsg.Results[eventId].TotalRequestNum)
-				log2.Logger.Debug("total          ", total)
 				sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) / total).Round(2).Float64()
 
 			}
