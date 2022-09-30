@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"github.com/Shopify/sarama"
 	"github.com/pkg/errors"
+	"github.com/shopspring/decimal"
 	"kp-collector/internal/pkg/conf"
 	"kp-collector/internal/pkg/dal/es"
 	"kp-collector/internal/pkg/dal/kao"
 	log2 "kp-collector/internal/pkg/log"
 	"sort"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -112,9 +112,8 @@ Loop:
 						sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLineValue = kao.TimeLineCalculate(95, requestTimeList)
 						sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLineValue = kao.TimeLineCalculate(99, requestTimeList)
 						sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine, requestTimeList)
-						total := float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / 1000000000
-						qps := fmt.Sprintf("%.2f", float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)/total)
-						sceneTestResultDataMsg.Results[eventId].Qps, _ = strconv.ParseFloat(qps, 64)
+						total := float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(time.Second)
+						sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) / total).Round(2).Float64()
 					}
 					sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
 					if err = es.InsertTestData(sceneTestResultDataMsg); err != nil {
@@ -183,6 +182,7 @@ Loop:
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].SendBytes += resultDataMsg.SendBytes
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].TotalRequestNum += 1
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].TotalRequestTime += resultDataMsg.RequestTime
+			log2.Logger.Debug("resultDataMsg.RequestTime,,,,,,,,,", resultDataMsg.RequestTime)
 			if resultDataMsg.IsSucceed {
 				sceneTestResultDataMsg.Results[resultDataMsg.EventId].SuccessNum += 1
 			} else {
@@ -205,9 +205,8 @@ Loop:
 				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLineValue = kao.TimeLineCalculate(95, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLineValue = kao.TimeLineCalculate(99, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine, requestTimeList)
-				total := float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / 1000000000
-				qps := fmt.Sprintf("%.2f", float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)/total)
-				sceneTestResultDataMsg.Results[eventId].Qps, _ = strconv.ParseFloat(qps, 64)
+				total := float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(time.Second)
+				sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) / total).Round(2).Float64()
 
 			}
 			sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
