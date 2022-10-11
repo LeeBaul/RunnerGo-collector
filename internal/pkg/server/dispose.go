@@ -112,8 +112,7 @@ Loop:
 						sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLineValue = kao.TimeLineCalculate(95, requestTimeList)
 						sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLineValue = kao.TimeLineCalculate(99, requestTimeList)
 						sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine, requestTimeList)
-						total := float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(time.Second)
-						sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) / total).Round(2).Float64()
+						sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 					}
 					sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
 					if err = es.InsertTestData(sceneTestResultDataMsg); err != nil {
@@ -182,7 +181,6 @@ Loop:
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].SendBytes += resultDataMsg.SendBytes
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].TotalRequestNum += 1
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].TotalRequestTime += resultDataMsg.RequestTime
-			log2.Logger.Debug("resultDataMsg.RequestTime,,,,,,,,,", resultDataMsg.RequestTime)
 			if resultDataMsg.IsSucceed {
 				sceneTestResultDataMsg.Results[resultDataMsg.EventId].SuccessNum += 1
 			} else {
@@ -195,6 +193,7 @@ Loop:
 			}
 			for eventId, requestTimeList := range requestTimeListMap {
 				sort.Sort(requestTimeList)
+				sort.Sort(requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].AvgRequestTime = float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)
 				sceneTestResultDataMsg.Results[eventId].MaxRequestTime = float64(requestTimeList[len(requestTimeList)-1])
 				sceneTestResultDataMsg.Results[eventId].MinRequestTime = float64(requestTimeList[0])
@@ -205,9 +204,7 @@ Loop:
 				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLineValue = kao.TimeLineCalculate(95, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLineValue = kao.TimeLineCalculate(99, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine, requestTimeList)
-				total := float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(time.Second)
-				sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) / total).Round(2).Float64()
-
+				sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 			}
 			sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
 			err := es.InsertTestData(sceneTestResultDataMsg)
