@@ -191,9 +191,10 @@ Loop:
 			if sceneTestResultDataMsg.Results == nil {
 				continue
 			}
+
 			for eventId, requestTimeList := range requestTimeListMap {
 				sort.Sort(requestTimeList)
-				sort.Sort(requestTimeList)
+				log2.Logger.Info("sceneTestResultDataMsg.Results[eventId].AvgRequestTime", sceneTestResultDataMsg.Results[eventId].AvgRequestTime)
 				sceneTestResultDataMsg.Results[eventId].AvgRequestTime = float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)
 				sceneTestResultDataMsg.Results[eventId].MaxRequestTime = float64(requestTimeList[len(requestTimeList)-1])
 				sceneTestResultDataMsg.Results[eventId].MinRequestTime = float64(requestTimeList[0])
