@@ -58,7 +58,6 @@ func TestSendStopMsg(t *testing.T) {
 	//}()
 
 	//}
-	fmt.Println(time.Now().UnixNano() / int64(time.Second))
 }
 
 func TestExecute(t *testing.T) {
@@ -86,7 +85,7 @@ func TestExecute(t *testing.T) {
 		time.Sleep(3 * time.Second)
 		for _, topic := range topics {
 			if topic == "__consumer_offsets" {
-				break
+				continue
 			}
 			ca, errNewClusterAdmin := sarama.NewClusterAdmin([]string{"172.17.101.188:9092"}, saramaConfig)
 			if errNewClusterAdmin != nil {
