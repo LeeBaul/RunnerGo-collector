@@ -27,14 +27,35 @@ func TestInitEsClient(t *testing.T) {
 		fmt.Println("es连接失败", err)
 		return
 	}
-	for i := 1000; i > 900; i-- {
-		r, err := Client.DeleteIndex(fmt.Sprintf("%d", i)).Do(context.Background())
-		if err != nil {
-			fmt.Println("es删除索引", err)
-			return
-		}
-		fmt.Println(r)
+
+	// 查询es中的所有index
+	//cfg := elasticsearch.Config{
+	//	Addresses: []string{
+	//		"http://172.17.101.191:9200",
+	//	},
+	//	Username: "elastic",
+	//	Password: "ZSrfx4R6ICa3skGBpCdf",
+	//}
+	//es, err := elasticsearch.NewClient(cfg)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//res, err := esapi.CatIndicesRequest{Format: "json"}.Do(context.Background(), es)
+	//if err != nil {
+	//	return
+	//}
+	//defer res.Body.Close()
+	//
+	//fmt.Println(res.String())
+
+	// 删除index
+
+	r, err := Client.DeleteIndex(fmt.Sprintf("%d", 970)).Do(context.Background())
+	if err != nil {
+		fmt.Println("es删除索引", err)
+		return
 	}
+	fmt.Println(r)
 
 	//indice := Client.IndexGetSettings("924")
 	//str, _ := json.Marshal(indice)
