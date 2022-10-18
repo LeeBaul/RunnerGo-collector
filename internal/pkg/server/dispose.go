@@ -79,7 +79,9 @@ func ReceiveMessage(partition sarama.PartitionConsumer, consumerMap *sync.Map, c
 	var resultDataMsg = kao.ResultDataMsg{}
 	var sceneTestResultDataMsg kao.SceneTestResultDataMsg
 	var machineNum = int64(0)
+	var eventMap = make(map[string]bool)
 	var machineMap = make(map[string]map[string]bool)
+
 	ticker := time.NewTicker(1 * time.Second)
 Loop:
 	for {
@@ -182,7 +184,8 @@ Loop:
 			}
 			if _, ok := machineMap[resultDataMsg.MachineIp][resultDataMsg.EventId]; !ok {
 				sceneTestResultDataMsg.Results[resultDataMsg.EventId].Concurrency += resultDataMsg.Concurrency
-				machineMap[resultDataMsg.MachineIp][resultDataMsg.EventId] = true
+				eventMap[resultDataMsg.EventId] = true
+				machineMap[resultDataMsg.MachineIp] = eventMap
 			}
 
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].ReceivedBytes += resultDataMsg.ReceivedBytes
