@@ -27,37 +27,37 @@ func (rt A) Swap(i int, j int) {
 }
 
 func TestSendStopMsg(t *testing.T) {
-	//consumer, err := sarama.NewConsumer([]string{"172.17.101.188:9092"}, sarama.NewConfig())
-	//if err != nil {
-	//	fmt.Println("consumer connect err:", err)
-	//	return
-	//}
-	//defer consumer.Close()
-	//
-	////获取 kafka 主题
-	//partitions, err := consumer.Partitions("__consumer_offsets")
-	//if err != nil {
-	//	fmt.Println("get partitions failed, err:", err)
-	//	return
-	//}
-	//
-	//fmt.Println(111111)
-	//for _, p := range partitions {
-	//	fmt.Println(p)
-	//go func() {
-	//	//sarama.OffsetNewest：从当前的偏移量开始消费，sarama.OffsetOldest：从最老的偏移量开始消费
-	//	partitionConsumer, err := consumer.ConsumePartition("9", p, sarama.OffsetNewest)
-	//	if err != nil {
-	//		fmt.Println("partitionConsumer err:", err)
-	//	}
-	//
-	//	for m := range partitionConsumer.Messages() {
-	//		fmt.Println(m)
-	//	}
-	//
-	//}()
+	consumer, err := sarama.NewConsumer([]string{"172.17.101.188:9092"}, sarama.NewConfig())
+	if err != nil {
+		fmt.Println("consumer connect err:", err)
+		return
+	}
+	defer consumer.Close()
 
-	//}
+	//获取 kafka 主题
+	partitions, err := consumer.Partitions("__consumer_offsets")
+	if err != nil {
+		fmt.Println("get partitions failed, err:", err)
+		return
+	}
+
+	fmt.Println(111111)
+	for _, p := range partitions {
+		fmt.Println(p)
+		//go func() {
+		//	//sarama.OffsetNewest：从当前的偏移量开始消费，sarama.OffsetOldest：从最老的偏移量开始消费
+		//	partitionConsumer, err := consumer.ConsumePartition("9", p, sarama.OffsetNewest)
+		//	if err != nil {
+		//		fmt.Println("partitionConsumer err:", err)
+		//	}
+		//
+		//	for m := range partitionConsumer.Messages() {
+		//		fmt.Println(m)
+		//	}
+		//
+		//}()
+
+	}
 }
 
 func TestExecute(t *testing.T) {
@@ -85,7 +85,7 @@ func TestExecute(t *testing.T) {
 		time.Sleep(3 * time.Second)
 		for _, topic := range topics {
 			if topic == "__consumer_offsets" {
-				continue
+				break
 			}
 			ca, errNewClusterAdmin := sarama.NewClusterAdmin([]string{"172.17.101.188:9092"}, saramaConfig)
 			if errNewClusterAdmin != nil {

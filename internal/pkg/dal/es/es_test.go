@@ -3,6 +3,8 @@ package es
 import (
 	"context"
 	"fmt"
+	"github.com/elastic/go-elasticsearch/v7"
+	"github.com/elastic/go-elasticsearch/v7/esapi"
 	"github.com/olivere/elastic/v7"
 	"log"
 	"os"
@@ -11,9 +13,9 @@ import (
 )
 
 func TestInitEsClient(t *testing.T) {
-	queryEs := elastic.NewBoolQuery()
-	queryEs = queryEs.Must(elastic.NewMatchQuery("report_id", "924"))
-
+	//queryEs := elastic.NewBoolQuery()
+	//queryEs = queryEs.Must(elastic.NewMatchQuery("report_id", "924"))
+	//
 	Client, _ = elastic.NewClient(
 		elastic.SetURL("http://172.17.101.191:9200"),
 		elastic.SetSniff(false),
@@ -21,41 +23,42 @@ func TestInitEsClient(t *testing.T) {
 		elastic.SetErrorLog(log.New(os.Stdout, "APP", log.Lshortfile)),
 		elastic.SetHealthcheckInterval(30*time.Second),
 	)
-
-	_, _, err := Client.Ping("http://172.17.101.191:9200").Do(context.Background())
-	if err != nil {
-		fmt.Println("es连接失败", err)
-		return
-	}
-
-	// 查询es中的所有index
-	//cfg := elasticsearch.Config{
-	//	Addresses: []string{
-	//		"http://172.17.101.191:9200",
-	//	},
-	//	Username: "elastic",
-	//	Password: "ZSrfx4R6ICa3skGBpCdf",
-	//}
-	//es, err := elasticsearch.NewClient(cfg)
+	//
+	//_, _, err := Client.Ping("http://172.17.101.191:9200").Do(context.Background())
 	//if err != nil {
-	//	panic(err)
-	//}
-	//res, err := esapi.CatIndicesRequest{Format: "json"}.Do(context.Background(), es)
-	//if err != nil {
+	//	fmt.Println("es连接失败", err)
 	//	return
 	//}
-	//defer res.Body.Close()
-	//
-	//fmt.Println(res.String())
 
 	// 删除index
+	arr := []int{1067}
+	for _, index := range arr {
+		r, err := Client.DeleteIndex(fmt.Sprintf("%d", index)).Do(context.Background())
+		if err != nil {
+			fmt.Println("es删除索引", err)
+		}
+		fmt.Println(r)
+	}
 
-	r, err := Client.DeleteIndex(fmt.Sprintf("%d", 970)).Do(context.Background())
+	//查询es中的所有index
+	cfg := elasticsearch.Config{
+		Addresses: []string{
+			"http://172.17.101.191:9200",
+		},
+		Username: "elastic",
+		Password: "ZSrfx4R6ICa3skGBpCdf",
+	}
+	es, err := elasticsearch.NewClient(cfg)
 	if err != nil {
-		fmt.Println("es删除索引", err)
+		panic(err)
+	}
+	res, err := esapi.CatIndicesRequest{Format: "json"}.Do(context.Background(), es)
+	if err != nil {
 		return
 	}
-	fmt.Println(r)
+	defer res.Body.Close()
+
+	fmt.Println(res.String())
 
 	//indice := Client.IndexGetSettings("924")
 	//str, _ := json.Marshal(indice)
