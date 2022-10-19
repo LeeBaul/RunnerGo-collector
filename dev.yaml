@@ -26,9 +26,9 @@ kafka:
   topic: "StressTestData"
 
 es:
-  host: "http://172.17.101.191:9200"
+  host: "http://es-cn-7pp2x5zd10001vn8v.elasticsearch.aliyuncs.com:9200"
   username: "elastic"
-  password: "ZSrfx4R6ICa3skGBpCdf"
+  password: "dnRqw5rRicYjbkkE"
   index: "report"
 
 grpc:
