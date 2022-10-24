@@ -1,5 +1,10 @@
 package kao
 
+import (
+	"encoding/json"
+	"kp-collector/internal/pkg/log"
+)
+
 // ResultDataMsg 请求结果数据结构
 type ResultDataMsg struct {
 	End            bool    `json:"end"` // 结束标记
@@ -71,6 +76,16 @@ type SceneTestResultDataMsg struct {
 	Machine    map[string]int64                 `json:"machine"`
 	TimeStamp  int64                            `json:"time_stamp"`
 }
+
+func (s SceneTestResultDataMsg) ToJson() string {
+	res, err := json.Marshal(s)
+	if err != nil {
+		log.Logger.Debug("转json失败：  ", err)
+		return ""
+	}
+	return string(res)
+}
+
 type RequestTimeList []int64
 
 func (rt RequestTimeList) Len() int {

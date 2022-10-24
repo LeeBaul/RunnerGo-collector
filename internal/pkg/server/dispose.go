@@ -7,7 +7,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
 	"kp-collector/internal/pkg/conf"
-	"kp-collector/internal/pkg/dal/es"
 	"kp-collector/internal/pkg/dal/kao"
 	"kp-collector/internal/pkg/dal/redis"
 	log2 "kp-collector/internal/pkg/log"
@@ -105,9 +104,9 @@ Loop:
 						sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 					}
 					sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
-					if err = es.InsertTestData(sceneTestResultDataMsg); err != nil {
-						log2.Logger.Error("es写入失败:", err)
-						return
+					if err = redis.InsertTestData(sceneTestResultDataMsg); err != nil {
+						log2.Logger.Error("redis写入数据失败:", err)
+						continue
 					}
 					key := fmt.Sprintf("%d:%s:%d", sceneTestResultDataMsg.PlanId, sceneTestResultDataMsg.ReportId, partition)
 					if err = redis.DeletePartition(key); err != nil {
@@ -207,9 +206,9 @@ Loop:
 				sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 			}
 			sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
-			err := es.InsertTestData(sceneTestResultDataMsg)
+			err := redis.InsertTestData(sceneTestResultDataMsg)
 			if err != nil {
-				return
+				continue
 			}
 		default:
 
