@@ -31,22 +31,22 @@ func TestInitEsClient(t *testing.T) {
 	//}
 
 	// 删除index
-	arr := []int{1067}
-	for _, index := range arr {
-		r, err := Client.DeleteIndex(fmt.Sprintf("%d", index)).Do(context.Background())
-		if err != nil {
-			fmt.Println("es删除索引", err)
-		}
-		fmt.Println(r)
-	}
+	//arr := []int{1067}
+	//for _, index := range arr {
+	//	r, err := Client.DeleteIndex(fmt.Sprintf("%d", index)).Do(context.Background())
+	//	if err != nil {
+	//		fmt.Println("es删除索引", err)
+	//	}
+	//	fmt.Println(r)
+	//}
 
 	//查询es中的所有index
 	cfg := elasticsearch.Config{
 		Addresses: []string{
-			"http://172.17.101.191:9200",
+			"http://es-cn-7pp2x5zd10001vn8v.elasticsearch.aliyuncs.com:9200",
 		},
 		Username: "elastic",
-		Password: "ZSrfx4R6ICa3skGBpCdf",
+		Password: "dnRqw5rRicYjbkkE",
 	}
 	es, err := elasticsearch.NewClient(cfg)
 	if err != nil {

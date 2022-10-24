@@ -241,7 +241,7 @@ func DeleteTopic(config *sarama.Config, host, topic string) (err error) {
 		return
 	}
 	if err = ca.DeleteTopic(topic); err != nil {
-		log2.Logger.Error("删除topic"+topic+"是错误错误：", err)
+		log2.Logger.Error("删除topic"+topic+"是错误：", err)
 		return
 	}
 	return

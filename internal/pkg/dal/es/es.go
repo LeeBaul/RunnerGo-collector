@@ -62,6 +62,7 @@ func InsertTestData(sceneTestResultDataMsg kao.SceneTestResultDataMsg) (err erro
 	_, err = Client.Index().Index(index).BodyJson(sceneTestResultDataMsg).Do(context.Background())
 	if err != nil {
 		log2.Logger.Error("es写入数据失败", err)
+		log2.Logger.Debug("sceneTestResultDataMsg.ReportId", sceneTestResultDataMsg)
 		SendStopMsg(conf.Conf.GRPC.Host, sceneTestResultDataMsg.ReportId)
 		return
 	}

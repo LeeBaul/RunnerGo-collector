@@ -5,7 +5,6 @@ import (
 	"github.com/Shopify/sarama"
 	log2 "kp-collector/internal/pkg/log"
 	"testing"
-	"time"
 )
 
 type A []S
@@ -82,20 +81,19 @@ func TestExecute(t *testing.T) {
 			log2.Logger.Error("获取topics失败：", err)
 			continue
 		}
-		time.Sleep(3 * time.Second)
-		for _, topic := range topics {
-			if topic == "__consumer_offsets" {
-				break
-			}
-			ca, errNewClusterAdmin := sarama.NewClusterAdmin([]string{"172.17.101.188:9092"}, saramaConfig)
-			if errNewClusterAdmin != nil {
-				log2.Logger.Error("创建NewClusterAdmin失败：", errNewClusterAdmin)
-			}
-			if errDelete := ca.DeleteTopic(topic); errDelete != nil {
-				fmt.Println("删除top：cctv1错误：", topic, errDelete)
-			}
-
-		}
+		//for _, topic := range topics {
+		//	if topic == "__consumer_offsets" {
+		//		continue
+		//	}
+		//	ca, errNewClusterAdmin := sarama.NewClusterAdmin([]string{"172.17.101.188:9092"}, saramaConfig)
+		//	if errNewClusterAdmin != nil {
+		//		log2.Logger.Error("创建NewClusterAdmin失败：", errNewClusterAdmin)
+		//	}
+		//	if errDelete := ca.DeleteTopic(topic); errDelete != nil {
+		//		fmt.Println("删除top：cctv1错误：", topic, errDelete)
+		//	}
+		//
+		//}
 
 		fmt.Println(topics)
 	}
