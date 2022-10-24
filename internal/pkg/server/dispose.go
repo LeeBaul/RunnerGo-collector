@@ -66,18 +66,18 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 	var machineMap = make(map[string]map[string]bool)
 
 	ticker := time.NewTicker(1 * time.Second)
-Loop:
+	log2.Logger.Info("开始消费消息")
 	for {
 		select {
 		case msg := <-pc.Messages():
 			err := json.Unmarshal(msg.Value, &resultDataMsg)
 			if err != nil {
 				log2.Logger.Error("kafka消息转换失败：", err)
-				break Loop
+				continue
 			}
 			if resultDataMsg.ReportId == "" {
 				log2.Logger.Error(fmt.Sprintf("es连接失败: %s", err))
-				break Loop
+				continue
 			}
 			if machineNum == 0 && resultDataMsg.MachineNum != 0 {
 				machineNum = resultDataMsg.MachineNum + 1
@@ -111,14 +111,16 @@ Loop:
 					key := fmt.Sprintf("%d:%s:%d", sceneTestResultDataMsg.PlanId, sceneTestResultDataMsg.ReportId, partition)
 					if err = redis.DeletePartition(key); err != nil {
 						log2.Logger.Error("删除partition redis key 失败： ", err)
+						ticker.Stop()
 						return
 					}
+					ticker.Stop()
 					return
 				}
 				if sceneTestResultDataMsg.Results == nil {
 					continue
 				}
-				break Loop
+				continue
 			}
 			if sceneTestResultDataMsg.SceneId == 0 {
 				sceneTestResultDataMsg.SceneId = resultDataMsg.SceneId
@@ -183,9 +185,8 @@ Loop:
 				sceneTestResultDataMsg.Results[resultDataMsg.EventId].ErrorNum += 1
 			}
 			requestTimeListMap[resultDataMsg.EventId] = append(requestTimeListMap[resultDataMsg.EventId], resultDataMsg.RequestTime)
-
 		case <-ticker.C:
-			if sceneTestResultDataMsg.Results == nil {
+			if sceneTestResultDataMsg.ReportId == "" || sceneTestResultDataMsg.Results == nil {
 				continue
 			}
 
@@ -210,8 +211,6 @@ Loop:
 			if err != nil {
 				continue
 			}
-		default:
-
 		}
 	}
 }
