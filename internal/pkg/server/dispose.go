@@ -207,8 +207,8 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 			}
 			sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
-			err := redis.InsertTestData(sceneTestResultDataMsg)
-			if err != nil {
+
+			if err := redis.InsertTestData(sceneTestResultDataMsg); err != nil {
 				continue
 			}
 		}
