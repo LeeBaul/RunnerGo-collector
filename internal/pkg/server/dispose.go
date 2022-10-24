@@ -9,6 +9,7 @@ import (
 	"kp-collector/internal/pkg/conf"
 	"kp-collector/internal/pkg/dal/es"
 	"kp-collector/internal/pkg/dal/kao"
+	"kp-collector/internal/pkg/dal/redis"
 	log2 "kp-collector/internal/pkg/log"
 	"sort"
 	"sync"
@@ -16,63 +17,46 @@ import (
 )
 
 func Execute(host string) {
-	var topicMap sync.Map
-	var consumerMap = &sync.Map{}
+	var partitionMap = new(sync.Map)
 	saramaConfig := sarama.NewConfig()
 	saramaConfig.Consumer.Return.Errors = true
-
-	for {
-		// 创建client
-		client, err := sarama.NewClient([]string{host}, saramaConfig)
-		if err != nil {
-			log2.Logger.Error("创建kafka客户端失败:", err)
-			return
-		}
-
-		// 获取所有的topic
-		topics, topicsErr := client.Topics()
-		if topicsErr != nil {
-			log2.Logger.Error("获取topics失败：", err)
-			continue
-		}
-		if clientErr := client.Close(); clientErr != nil {
-			log2.Logger.Error("关闭kafka客户端失败:", clientErr)
-		}
-
-		for _, topic := range topics {
-			if topic == "__consumer_offsets" {
-				break
-			}
-			if _, ok := topicMap.Load(topic); !ok {
-				consumer, consumerErr := sarama.NewConsumer([]string{host}, sarama.NewConfig())
-				if consumerErr != nil {
-					log2.Logger.Error("topic  :"+topic+", 创建消费者失败:", consumerErr)
-					continue
-				}
-				partitions, consumerErr := consumer.Partitions(topic)
-				if consumerErr != nil {
-					log2.Logger.Error("获取", conf.Conf.Kafka.Topic, "主题失败：", consumerErr)
-					if consumerErr = consumer.Close(); consumerErr != nil {
-						log2.Logger.Error("关闭消费者失败：", consumerErr)
-					}
-					continue
-				}
-				topicMap.Store(topic, true)
-				partition, partitionConsumerErr := consumer.ConsumePartition(topic, partitions[0], sarama.OffsetNewest)
-				if partitionConsumerErr != nil {
-					log2.Logger.Error("创建消费者失败：", partitionConsumerErr)
-					continue
-				}
-				go ReceiveMessage(partition, consumerMap, saramaConfig, host, topic)
-
-			}
+	topic := conf.Conf.Kafka.Topic
+	consumer, consumerErr := sarama.NewConsumer([]string{host}, sarama.NewConfig())
+	if consumerErr != nil {
+		log2.Logger.Error("topic  :"+topic+", 创建消费者失败:", consumerErr)
+		return
+	}
+	partitions, consumerErr := consumer.Partitions(topic)
+	if consumerErr != nil {
+		log2.Logger.Error("获取", conf.Conf.Kafka.Topic, "主题失败：", consumerErr)
+		if consumerErr = consumer.Close(); consumerErr != nil {
+			log2.Logger.Error("关闭消费者失败：", consumerErr)
 		}
 	}
+	for {
+		if partitions == nil || len(partitions) < 1 {
+			continue
+		}
+		for _, partition := range partitions {
+			if _, ok := partitionMap.Load(partition); ok {
+				continue
+			}
+			partitionMap.Store(partition, true)
+			pc, err := consumer.ConsumePartition(topic, partition, sarama.OffsetNewest)
+			if err != nil {
+				log2.Logger.Error("创建消费者失败：    ", err)
+				break
+			}
+			go ReceiveMessage(pc, partitionMap, partition)
+		}
+	}
+
 }
 
-func ReceiveMessage(partition sarama.PartitionConsumer, consumerMap *sync.Map, config *sarama.Config, host, topic string) {
-	defer partition.AsyncClose()
-	if partition == nil || consumerMap == nil {
+func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partition int32) {
+	defer pc.AsyncClose()
+	defer partitionMap.Delete(partition)
+	if pc == nil || partitionMap == nil {
 		return
 	}
 	var requestTimeListMap = make(map[string]kao.RequestTimeList)
@@ -86,7 +70,7 @@ func ReceiveMessage(partition sarama.PartitionConsumer, consumerMap *sync.Map, c
 Loop:
 	for {
 		select {
-		case msg := <-partition.Messages():
+		case msg := <-pc.Messages():
 			err := json.Unmarshal(msg.Value, &resultDataMsg)
 			if err != nil {
 				log2.Logger.Error("kafka消息转换失败：", err)
@@ -125,7 +109,9 @@ Loop:
 						log2.Logger.Error("es写入失败:", err)
 						return
 					}
-					if err = DeleteTopic(config, host, topic); err != nil {
+					key := fmt.Sprintf("%d:%s:%d", sceneTestResultDataMsg.PlanId, sceneTestResultDataMsg.ReportId, partition)
+					if err = redis.DeletePartition(key); err != nil {
+						log2.Logger.Error("删除partition redis key 失败： ", err)
 						return
 					}
 					return

@@ -33,3 +33,9 @@ es:
 
 grpc:
   host: "kpcontroller.apipost.cn:443"
+
+
+redis:
+  address: "172.17.101.191:6398"
+  password: "apipost"
+  db: 0

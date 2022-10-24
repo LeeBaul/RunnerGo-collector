@@ -17,6 +17,7 @@ type Config struct {
 	Prometheus Prometheus `yaml:"prometheus"`
 	Kafka      Kafka      `yaml:"kafka"`
 	ES         ES         `yaml:"es"`
+	Redis      Redis      `yaml:"redis"`
 }
 
 type Http struct {
@@ -62,6 +63,12 @@ type ES struct {
 	Username string `yaml:"username"`
 	Password string `yaml:"password"`
 	Index    string `yaml:"index"`
+}
+
+type Redis struct {
+	Address  string `yaml:"address"`
+	Password string `yaml:"password"`
+	DB       int64  `yaml:"DB"`
 }
 
 func MustInitConf() {
