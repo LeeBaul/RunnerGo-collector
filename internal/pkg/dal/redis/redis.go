@@ -27,15 +27,9 @@ func InitRedisClient(addr, password string, db int64) (err error) {
 	return err
 }
 
-func DeletePartition(key string) (err error) {
-	_, err = RDB.Get(key).Result()
-	if err != nil {
-		return
-	}
-	_, err = RDB.Del(key).Result()
-	if err != nil {
-		return
-	}
+func UpdatePartitionStatus(key string, partition int32) (err error) {
+	field := fmt.Sprintf("%d", partition)
+	err = RDB.HDel(key, field).Err()
 	return
 }
 
@@ -49,7 +43,7 @@ func InsertTestData(sceneTestResultDataMsg kao.SceneTestResultDataMsg) (err erro
 	return
 }
 
-func Insert(rdb *redis.Client, a *A) (err error) {
+func Insert(rdb *redis.Client, a string) (err error) {
 	err = rdb.LPush("report1", a).Err()
 	if err != nil {
 		return

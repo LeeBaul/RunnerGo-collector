@@ -56,6 +56,7 @@ type Prometheus struct {
 type Kafka struct {
 	Host  string `yaml:"host"`
 	Topic string `yaml:"topic"`
+	Key   string `yaml:"key"`
 }
 
 type ES struct {

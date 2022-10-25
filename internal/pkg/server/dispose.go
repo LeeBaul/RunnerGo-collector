@@ -108,9 +108,8 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 						log2.Logger.Error("redis写入数据失败:", err)
 						continue
 					}
-					key := fmt.Sprintf("%d:%s:%d", sceneTestResultDataMsg.PlanId, sceneTestResultDataMsg.ReportId, partition)
-					if err = redis.DeletePartition(key); err != nil {
-						log2.Logger.Error("删除partition redis key 失败： ", err)
+					if err = redis.UpdatePartitionStatus(conf.Conf.Kafka.Key, partition); err != nil {
+						log2.Logger.Error("修改kafka分区状态失败： ", err)
 						ticker.Stop()
 						return
 					}

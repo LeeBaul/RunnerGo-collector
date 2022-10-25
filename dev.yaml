@@ -24,7 +24,7 @@ prometheus:
 kafka:
   host: "172.17.101.188:9092"
   topic: "StressTestData"
-
+  key: "kafka:report:partition"
 es:
   host: "http://es-cn-7pp2x5zd10001vn8v.elasticsearch.aliyuncs.com:9200"
   username: "elastic"

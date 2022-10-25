@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/go-redis/redis"
 	"testing"
@@ -17,12 +18,16 @@ func TestInsert(t *testing.T) {
 	var a = &A{}
 	for i := 0; i < 10; i++ {
 		a.B = i
-		err := Insert(rdb, a)
+		s, _ := json.Marshal(a)
+		err := Insert(rdb, string(s))
 		if err != nil {
 			fmt.Println(err)
 		}
 	}
 
 	val := rdb.LRange("report1", 0, -1).Val()
-	fmt.Println("result:         ", val)
+	for i := len(val) - 1; i >= 0; i-- {
+		fmt.Println("result:         ", val[i])
+	}
+
 }
