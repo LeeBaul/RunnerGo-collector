@@ -31,12 +31,11 @@ func InitRedisClient(addr, password string, db int64) (err error) {
 
 func UpdatePartitionStatus(key string, partition int32) (err error) {
 	field := fmt.Sprintf("%d", partition)
-	fmt.Println("key:             ", key, "删除：                ", field)
 	err = RDB.HDel(key, field).Err()
 	return
 }
 
-func InsertTestData(sceneTestResultDataMsg kao.SceneTestResultDataMsg) (err error) {
+func InsertTestData(sceneTestResultDataMsg *kao.SceneTestResultDataMsg) (err error) {
 	data := sceneTestResultDataMsg.ToJson()
 	key := fmt.Sprintf("%d:%s:reportData", sceneTestResultDataMsg.PlanId, sceneTestResultDataMsg.ReportId)
 	if sceneTestResultDataMsg.End {

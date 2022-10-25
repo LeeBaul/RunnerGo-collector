@@ -77,7 +77,7 @@ type SceneTestResultDataMsg struct {
 	TimeStamp  int64                            `json:"time_stamp"`
 }
 
-func (s SceneTestResultDataMsg) ToJson() string {
+func (s *SceneTestResultDataMsg) ToJson() string {
 	res, err := json.Marshal(s)
 	if err != nil {
 		log.Logger.Debug("转json失败：  ", err)

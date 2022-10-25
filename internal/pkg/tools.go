@@ -36,7 +36,6 @@ func SendStopMsg(host, reportId string) {
 	}()
 	grpcClient := services.NewKpControllerClient(conn)
 	req := new(services.NotifyStopStressReq)
-	log2.Logger.Error("reportId", reportId)
 	req.ReportID, err = strconv.ParseInt(reportId, 10, 64)
 	if err != nil {
 		log2.Logger.Error("reportId转换失败", err)

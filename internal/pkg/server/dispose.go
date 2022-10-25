@@ -61,7 +61,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 	}
 	var requestTimeListMap = make(map[string]kao.RequestTimeList)
 	var resultDataMsg = kao.ResultDataMsg{}
-	var sceneTestResultDataMsg kao.SceneTestResultDataMsg
+	var sceneTestResultDataMsg = new(kao.SceneTestResultDataMsg)
 	var machineNum = int64(0)
 	var eventMap = make(map[string]bool)
 	var machineMap = make(map[string]map[string]bool)
@@ -80,11 +80,11 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 		if machineNum == 0 && resultDataMsg.MachineNum != 0 {
 			machineNum = resultDataMsg.MachineNum + 1
 		}
+
 		if resultDataMsg.End {
 			machineNum = machineNum - 1
 			if machineNum == 1 {
 				sceneTestResultDataMsg.End = true
-
 				for eventId, requestTimeList := range requestTimeListMap {
 					sort.Sort(requestTimeList)
 					sceneTestResultDataMsg.Results[eventId].AvgRequestTime = float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)
@@ -202,12 +202,14 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 			}
 			sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
-
+			log2.Logger.Error("sceneTestResult1111111111111111111:              ", sceneTestResultDataMsg.ToJson())
 			if err = redis.InsertTestData(sceneTestResultDataMsg); err != nil {
+				log2.Logger.Error("测试数据写入redis失败：     ", err)
 				continue
 			}
+			startTime = time.Now().UnixMilli()
 		}
-		startTime = time.Now().UnixMilli()
+
 	}
 }
 
