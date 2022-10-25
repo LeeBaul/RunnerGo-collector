@@ -65,9 +65,10 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 	var machineNum = int64(0)
 	var eventMap = make(map[string]bool)
 	var machineMap = make(map[string]map[string]bool)
-	log2.Logger.Info("分区：", partition, "   开始消费消息")
+
 	startTime := time.Now().UnixMilli()
 	for msg := range pc.Messages() {
+		fmt.Println("AAA              :", machineNum)
 		err := json.Unmarshal(msg.Value, &resultDataMsg)
 		if err != nil {
 			log2.Logger.Error("kafka消息转换失败：", err)
@@ -77,6 +78,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			log2.Logger.Error(fmt.Sprintf("es连接失败: %s", err))
 			continue
 		}
+
 		if machineNum == 0 && resultDataMsg.MachineNum != 0 {
 			machineNum = resultDataMsg.MachineNum + 1
 		}
@@ -108,12 +110,8 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				}
 				if err = redis.UpdatePartitionStatus(conf.Conf.Kafka.Key, partition); err != nil {
 					log2.Logger.Error("修改kafka分区状态失败： ", err)
-					return
 				}
 				return
-			}
-			if sceneTestResultDataMsg.Results == nil {
-				continue
 			}
 			continue
 		}
@@ -202,7 +200,6 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 			}
 			sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
-			log2.Logger.Error("sceneTestResult1111111111111111111:              ", sceneTestResultDataMsg.ToJson())
 			if err = redis.InsertTestData(sceneTestResultDataMsg); err != nil {
 				log2.Logger.Error("测试数据写入redis失败：     ", err)
 				continue
