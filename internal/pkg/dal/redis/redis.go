@@ -2,6 +2,8 @@ package redis
 
 import (
 	"fmt"
+	"kp-collector/internal/pkg"
+	"kp-collector/internal/pkg/conf"
 	"kp-collector/internal/pkg/dal/kao"
 	"time"
 )
@@ -29,6 +31,7 @@ func InitRedisClient(addr, password string, db int64) (err error) {
 
 func UpdatePartitionStatus(key string, partition int32) (err error) {
 	field := fmt.Sprintf("%d", partition)
+	fmt.Println("key:             ", key, "删除：                ", field)
 	err = RDB.HDel(key, field).Err()
 	return
 }
@@ -36,6 +39,10 @@ func UpdatePartitionStatus(key string, partition int32) (err error) {
 func InsertTestData(sceneTestResultDataMsg kao.SceneTestResultDataMsg) (err error) {
 	data := sceneTestResultDataMsg.ToJson()
 	key := fmt.Sprintf("%d:%s:reportData", sceneTestResultDataMsg.PlanId, sceneTestResultDataMsg.ReportId)
+	if sceneTestResultDataMsg.End {
+		pkg.SendStopMsg(conf.Conf.GRPC.Host, sceneTestResultDataMsg.ReportId)
+	}
+
 	err = RDB.LPush(key, data).Err()
 	if err != nil {
 		return
