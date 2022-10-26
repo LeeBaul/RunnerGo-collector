@@ -67,8 +67,11 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 	var machineMap = make(map[string]map[string]bool)
 
 	startTime := time.Now().UnixMilli()
+	a := 0
 	log2.Logger.Info("分区：", partition, "   ,开始消费消息")
 	for msg := range pc.Messages() {
+		a++
+		fmt.Println("a================           ", a)
 		err := json.Unmarshal(msg.Value, &resultDataMsg)
 		if err != nil {
 			log2.Logger.Error("kafka消息转换失败：", err)
