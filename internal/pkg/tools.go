@@ -47,7 +47,7 @@ func SendStopMsg(host, reportId string) {
 		log2.Logger.Error("发送停止任务失败", err)
 		return
 	}
-	log2.Logger.Info(reportId, "任务结束， 消息已发送")
+	log2.Logger.Info(reportId, "   任务结束， 消息已发送")
 }
 
 func Post(url, body string) (err error) {

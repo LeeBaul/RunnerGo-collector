@@ -42,6 +42,7 @@ func Execute(host string) {
 			}
 			partitionMap.Store(partition, true)
 			pc, err := consumer.ConsumePartition(topic, partition, sarama.OffsetNewest)
+			pc.IsPaused()
 			if err != nil {
 				log2.Logger.Error("创建消费者失败：    ", err)
 				break
@@ -65,13 +66,9 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 	var machineNum = int64(0)
 	var eventMap = make(map[string]bool)
 	var machineMap = make(map[string]map[string]bool)
-
 	startTime := time.Now().UnixMilli()
-	a := 0
 	log2.Logger.Info("分区：", partition, "   ,开始消费消息")
 	for msg := range pc.Messages() {
-		a++
-		fmt.Println("a================           ", a)
 		err := json.Unmarshal(msg.Value, &resultDataMsg)
 		if err != nil {
 			log2.Logger.Error("kafka消息转换失败：", err)
@@ -114,7 +111,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				if err = redis.UpdatePartitionStatus(conf.Conf.Kafka.Key, partition); err != nil {
 					log2.Logger.Error("修改kafka分区状态失败： ", err)
 				}
-				log2.Logger.Info("删除key：", conf.Conf.Kafka.Key, "的value：  ", partition, "成功")
+				log2.Logger.Info("删除key：", conf.Conf.Kafka.Key, " 的值：  ", partition, "成功")
 				return
 			}
 			continue
