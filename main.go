@@ -8,10 +8,13 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 )
 
 func main() {
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	internal.InitProjects()
 
 	collectorService := &http.Server{

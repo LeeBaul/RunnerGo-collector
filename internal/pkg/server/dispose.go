@@ -111,6 +111,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				if err = redis.UpdatePartitionStatus(conf.Conf.Kafka.Key, partition); err != nil {
 					log2.Logger.Error("修改kafka分区状态失败： ", err)
 				}
+				log2.Logger.Info("删除key：", conf.Conf.Kafka.Key, "的value：  ", partition, "成功")
 				return
 			}
 			continue
