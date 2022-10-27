@@ -11,12 +11,10 @@ var Conf Config
 type Config struct {
 	Http       Http       `yaml:"http"`
 	GRPC       GRPC       `yaml:"grpc"`
-	MySQL      MySQL      `yaml:"mysql"`
 	JWT        JWT        `yaml:"jwt"`
 	MongoDB    MongoDB    `yaml:"mongodb"`
 	Prometheus Prometheus `yaml:"prometheus"`
 	Kafka      Kafka      `yaml:"kafka"`
-	ES         ES         `yaml:"es"`
 	Redis      Redis      `yaml:"redis"`
 }
 
@@ -27,15 +25,6 @@ type Http struct {
 type GRPC struct {
 	Port int    `yaml:"port"`
 	Host string `yaml:"host"`
-}
-
-type MySQL struct {
-	Username string `yaml:"username"`
-	Passport string `yaml:"passport"`
-	Host     string `yaml:"host"`
-	Port     int    `yaml:"port"`
-	DBName   string `yaml:"dbname"`
-	Charset  string `yaml:"charset"`
 }
 
 type JWT struct {
@@ -57,13 +46,6 @@ type Kafka struct {
 	Host  string `yaml:"host"`
 	Topic string `yaml:"topic"`
 	Key   string `yaml:"key"`
-}
-
-type ES struct {
-	Host     string `yaml:"host"`
-	Username string `yaml:"username"`
-	Password string `yaml:"password"`
-	Index    string `yaml:"index"`
 }
 
 type Redis struct {

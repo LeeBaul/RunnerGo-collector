@@ -1,13 +1,6 @@
 http:
   host: "0.0.0.0:20125"
 
-mysql:
-  username: "test_read_only"
-  passport: "db#01^st$Post"
-  host: "rm-2zem14s80lyu5c4z7.mysql.rds.aliyuncs.com"
-  port: 3306
-  dbname: "kunpeng"
-  charset: "utf8mb4"
 
 mongodb:
   dsn: "mongodb://kunpeng:kYjJpU8BYvb4EJ9x@dds-8vb14448e6c8d6241844-pub.mongodb.zhangbei.rds.aliyuncs.com:3717/kunpeng?replicaSet=mgset-509843895"
@@ -25,11 +18,6 @@ kafka:
   host: "172.17.101.188:9092"
   topic: "report"
   key: "kafka:report:partition"
-es:
-  host: "http://es-cn-7pp2x5zd10001vn8v.elasticsearch.aliyuncs.com:9200"
-  username: "elastic"
-  password: "dnRqw5rRicYjbkkE"
-  index: "report"
 
 grpc:
   host: "kpcontroller.apipost.cn:443"
