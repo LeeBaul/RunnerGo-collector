@@ -1,28 +1,31 @@
 package es
 
-import (
-	"context"
-	"fmt"
-	"github.com/elastic/go-elasticsearch/v7"
-	"github.com/elastic/go-elasticsearch/v7/esapi"
-	"github.com/olivere/elastic/v7"
-	"log"
-	"os"
-	"testing"
-	"time"
-)
+import "testing"
+
+//
+//import (
+//	"context"
+//	"fmt"
+//	"github.com/elastic/go-elasticsearch/v7"
+//	"github.com/elastic/go-elasticsearch/v7/esapi"
+//	"github.com/olivere/elastic/v7"
+//	"log"
+//	"os"
+//	"testing"
+//	"time"
+//)
 
 func TestInitEsClient(t *testing.T) {
 	//queryEs := elastic.NewBoolQuery()
 	//queryEs = queryEs.Must(elastic.NewMatchQuery("report_id", "924"))
 	//
-	Client, _ = elastic.NewClient(
-		elastic.SetURL("http://172.17.101.191:9200"),
-		elastic.SetSniff(false),
-		elastic.SetBasicAuth("elastic", "ZSrfx4R6ICa3skGBpCdf"),
-		elastic.SetErrorLog(log.New(os.Stdout, "APP", log.Lshortfile)),
-		elastic.SetHealthcheckInterval(30*time.Second),
-	)
+	//Client, _ = elastic.NewClient(
+	//	elastic.SetURL("http://172.17.101.191:9200"),
+	//	elastic.SetSniff(false),
+	//	elastic.SetBasicAuth("elastic", "ZSrfx4R6ICa3skGBpCdf"),
+	//	elastic.SetErrorLog(log.New(os.Stdout, "APP", log.Lshortfile)),
+	//	elastic.SetHealthcheckInterval(30*time.Second),
+	//)
 	//
 	//_, _, err := Client.Ping("http://172.17.101.191:9200").Do(context.Background())
 	//if err != nil {
@@ -41,24 +44,24 @@ func TestInitEsClient(t *testing.T) {
 	//}
 
 	//查询es中的所有index
-	cfg := elasticsearch.Config{
-		Addresses: []string{
-			"http://es-cn-7pp2x5zd10001vn8v.elasticsearch.aliyuncs.com:9200",
-		},
-		Username: "elastic",
-		Password: "dnRqw5rRicYjbkkE",
-	}
-	es, err := elasticsearch.NewClient(cfg)
-	if err != nil {
-		panic(err)
-	}
-	res, err := esapi.CatIndicesRequest{Format: "json"}.Do(context.Background(), es)
-	if err != nil {
-		return
-	}
-	defer res.Body.Close()
-
-	fmt.Println(res.String())
+	//cfg := elasticsearch.Config{
+	//	Addresses: []string{
+	//		"http://es-cn-7pp2x5zd10001vn8v.elasticsearch.aliyuncs.com:9200",
+	//	},
+	//	Username: "elastic",
+	//	Password: "dnRqw5rRicYjbkkE",
+	//}
+	//es, err := elasticsearch.NewClient(cfg)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//res, err := esapi.CatIndicesRequest{Format: "json"}.Do(context.Background(), es)
+	//if err != nil {
+	//	return
+	//}
+	//defer res.Body.Close()
+	//
+	//fmt.Println(res.String())
 
 	//indice := Client.IndexGetSettings("924")
 	//str, _ := json.Marshal(indice)
@@ -84,12 +87,12 @@ func TestInitEsClient(t *testing.T) {
 
 func TestPost(t *testing.T) {
 
-	host := "http://172.17.101.191:9200/"
-
-	url := host + "925"
-	body := "{\"settings\": {\"index\": {\"max_result_window\": 20000000}}}"
-	err := Post(url, body)
-	if err != nil {
-
-	}
+	//host := "http://172.17.101.191:9200/"
+	//
+	//url := host + "925"
+	//body := "{\"settings\": {\"index\": {\"max_result_window\": 20000000}}}"
+	//err := Post(url, body)
+	//if err != nil {
+	//
+	//}
 }
