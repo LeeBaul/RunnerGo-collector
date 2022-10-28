@@ -181,7 +181,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 		}
 		requestTimeListMap[resultDataMsg.EventId] = append(requestTimeListMap[resultDataMsg.EventId], resultDataMsg.RequestTime)
 		endTime := time.Now().UnixMilli()
-		if endTime-startTime >= 1500 {
+		if endTime-startTime >= 1000 {
 			if sceneTestResultDataMsg.ReportId == "" || sceneTestResultDataMsg.Results == nil {
 				break
 			}
@@ -209,6 +209,10 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				continue
 			}
 			startTime = time.Now().UnixMilli()
+			for _, v := range sceneTestResultDataMsg.Results {
+				v.SendBytes = 0
+				v.ReceivedBytes = 0
+			}
 		}
 
 	}

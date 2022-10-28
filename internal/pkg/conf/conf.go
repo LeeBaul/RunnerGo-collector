@@ -11,9 +11,6 @@ var Conf Config
 type Config struct {
 	Http       Http       `yaml:"http"`
 	GRPC       GRPC       `yaml:"grpc"`
-	JWT        JWT        `yaml:"jwt"`
-	MongoDB    MongoDB    `yaml:"mongodb"`
-	Prometheus Prometheus `yaml:"prometheus"`
 	Kafka      Kafka      `yaml:"kafka"`
 	Redis      Redis      `yaml:"redis"`
 	Management Management `yaml:"management"`
@@ -29,21 +26,6 @@ type Management struct {
 type GRPC struct {
 	Port int    `yaml:"port"`
 	Host string `yaml:"host"`
-}
-
-type JWT struct {
-	Issuer string `yaml:"issuer"`
-	Secret string `yaml:"secret"`
-}
-
-type MongoDB struct {
-	DSN      string `yaml:"dsn"`
-	Database string `yaml:"database"`
-}
-
-type Prometheus struct {
-	Host string `yaml:"host"`
-	Port int    `yaml:"port"`
 }
 
 type Kafka struct {
