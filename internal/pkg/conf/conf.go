@@ -16,12 +16,16 @@ type Config struct {
 	Prometheus Prometheus `yaml:"prometheus"`
 	Kafka      Kafka      `yaml:"kafka"`
 	Redis      Redis      `yaml:"redis"`
+	Management Management `yaml:"management"`
 }
 
 type Http struct {
 	Host string `yaml:"host"`
 }
 
+type Management struct {
+	Address string `yaml:"address"`
+}
 type GRPC struct {
 	Port int    `yaml:"port"`
 	Host string `yaml:"host"`

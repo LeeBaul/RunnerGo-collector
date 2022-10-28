@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/Shopify/sarama"
-	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
 	"kp-collector/internal/pkg/conf"
 	"kp-collector/internal/pkg/dal/kao"
@@ -92,9 +91,11 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 					sceneTestResultDataMsg.Results[eventId].AvgRequestTime = float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)
 					sceneTestResultDataMsg.Results[eventId].MaxRequestTime = float64(requestTimeList[len(requestTimeList)-1])
 					sceneTestResultDataMsg.Results[eventId].MinRequestTime = float64(requestTimeList[0])
+					sceneTestResultDataMsg.Results[eventId].FiftyRequestTimeline = 50
 					sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLine = 90
 					sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLine = 95
 					sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLine = 99
+					sceneTestResultDataMsg.Results[eventId].FiftyRequestTimelineValue = kao.TimeLineCalculate(50, requestTimeList)
 					sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLineValue = kao.TimeLineCalculate(90, requestTimeList)
 					sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLineValue = kao.TimeLineCalculate(95, requestTimeList)
 					sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLineValue = kao.TimeLineCalculate(99, requestTimeList)
@@ -105,7 +106,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 					sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 				}
 				sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
-				if err = redis.InsertTestData(sceneTestResultDataMsg); err != nil {
+				if err = redis.InsertTestData(machineMap, sceneTestResultDataMsg); err != nil {
 					log2.Logger.Error("redis写入数据失败:", err)
 				}
 				if err = redis.UpdatePartitionStatus(conf.Conf.Kafka.Key, partition); err != nil {
@@ -189,9 +190,11 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				sceneTestResultDataMsg.Results[eventId].AvgRequestTime = float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)
 				sceneTestResultDataMsg.Results[eventId].MaxRequestTime = float64(requestTimeList[len(requestTimeList)-1])
 				sceneTestResultDataMsg.Results[eventId].MinRequestTime = float64(requestTimeList[0])
+				sceneTestResultDataMsg.Results[eventId].FiftyRequestTimeline = 50
 				sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLine = 90
 				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLine = 95
 				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLine = 99
+				sceneTestResultDataMsg.Results[eventId].FiftyRequestTimelineValue = kao.TimeLineCalculate(50, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLineValue = kao.TimeLineCalculate(90, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLineValue = kao.TimeLineCalculate(95, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLineValue = kao.TimeLineCalculate(99, requestTimeList)
@@ -201,7 +204,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 			}
 			sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
-			if err = redis.InsertTestData(sceneTestResultDataMsg); err != nil {
+			if err = redis.InsertTestData(machineMap, sceneTestResultDataMsg); err != nil {
 				log2.Logger.Error("测试数据写入redis失败：     ", err)
 				continue
 			}
@@ -209,20 +212,4 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 		}
 
 	}
-}
-
-func DeleteTopic(config *sarama.Config, host, topic string) (err error) {
-	if config == nil || host == "" {
-		return errors.New("config或host不能为空")
-	}
-	ca, err := sarama.NewClusterAdmin([]string{host}, config)
-	if err != nil {
-		log2.Logger.Error("删除topic时创建Admin失败：", err)
-		return
-	}
-	if err = ca.DeleteTopic(topic); err != nil {
-		log2.Logger.Error("删除topic"+topic+"是错误：", err)
-		return
-	}
-	return
 }

@@ -3,7 +3,6 @@ package redis
 import (
 	"fmt"
 	"kp-collector/internal/pkg"
-	"kp-collector/internal/pkg/conf"
 	"kp-collector/internal/pkg/dal/kao"
 	"time"
 )
@@ -35,11 +34,11 @@ func UpdatePartitionStatus(key string, partition int32) (err error) {
 	return
 }
 
-func InsertTestData(sceneTestResultDataMsg *kao.SceneTestResultDataMsg) (err error) {
+func InsertTestData(machineMap map[string]map[string]bool, sceneTestResultDataMsg *kao.SceneTestResultDataMsg) (err error) {
 	data := sceneTestResultDataMsg.ToJson()
 	key := fmt.Sprintf("%d:%s:reportData", sceneTestResultDataMsg.PlanId, sceneTestResultDataMsg.ReportId)
 	if sceneTestResultDataMsg.End {
-		pkg.SendStopMsg(conf.Conf.GRPC.Host, sceneTestResultDataMsg.ReportId)
+		pkg.SendStopStressReport(machineMap, sceneTestResultDataMsg.ReportId)
 	}
 
 	err = RDB.LPush(key, data).Err()

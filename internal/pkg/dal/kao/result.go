@@ -49,10 +49,12 @@ type ApiTestResultDataMsg struct {
 	MaxRequestTime                 float64 `json:"max_request_time"`
 	MinRequestTime                 float64 `json:"min_request_time"` // 毫秒
 	CustomRequestTimeLine          int64   `json:"custom_request_time_line"`
+	FiftyRequestTimeline           int64   `json:"fifty_request_timeline"`
 	NinetyRequestTimeLine          int64   `json:"ninety_request_time_line"`
 	NinetyFiveRequestTimeLine      int64   `json:"ninety_five_request_time_line"`
 	NinetyNineRequestTimeLine      int64   `json:"ninety_nine_request_time_line"`
 	CustomRequestTimeLineValue     float64 `json:"custom_request_time_line_value"`
+	FiftyRequestTimelineValue      float64 `json:"fifty_request_timeline_value"`
 	NinetyRequestTimeLineValue     float64 `json:"ninety_request_time_line_value"`
 	NinetyFiveRequestTimeLineValue float64 `json:"ninety_five_request_time_line_value"`
 	NinetyNineRequestTimeLineValue float64 `json:"ninety_nine_request_time_line_value"`

@@ -27,3 +27,7 @@ redis:
   address: "172.17.101.191:6398"
   password: "apipost"
   db: 0
+
+
+management:
+  address: "https://kpmanage.apipost.cn/v1/plan/notify_stop_stress"

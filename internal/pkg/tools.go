@@ -4,11 +4,14 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
+	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
+	"io/ioutil"
 	services "kp-collector/api"
+	"kp-collector/internal/pkg/conf"
 	log2 "kp-collector/internal/pkg/log"
 	"net/http"
 	"strconv"
@@ -64,4 +67,38 @@ func Post(url, body string) (err error) {
 		return
 	}
 	return
+}
+
+type StopMsg struct {
+	ReportId string   `json:"report_id"`
+	Machines []string `json:"machines"`
+}
+
+func SendStopStressReport(machineMap map[string]map[string]bool, reportId string) {
+	sm := StopMsg{
+		ReportId: reportId,
+	}
+	for k, _ := range machineMap {
+		sm.Machines = append(sm.Machines, k)
+	}
+
+	body, err := json.Marshal(&sm)
+	if err != nil {
+		log2.Logger.Error(reportId, "   ,json转换失败：  ", err.Error())
+	}
+	res, err := http.Post(conf.Conf.Management.Address, "application/json", strings.NewReader(string(body)))
+
+	if err != nil {
+		log2.Logger.Error("http请求建立链接失败：", err.Error())
+		return
+	}
+	defer res.Body.Close()
+
+	_, err = ioutil.ReadAll(res.Body)
+
+	if err != nil {
+		log2.Logger.Error(reportId, " ,发送停止任务失败，http请求失败", err.Error())
+		return
+	}
+	log2.Logger.Error(reportId, "  :停止任务成功：")
 }
