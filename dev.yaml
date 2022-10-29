@@ -30,4 +30,4 @@ redis:
 
 
 management:
-  address: "https://kpmanage.apipost.cn/v1/plan/notify_stop_stress"
+  address: "https://kpmanage.apipost.cn/management/api/v1/plan/notify_stop_stress"
