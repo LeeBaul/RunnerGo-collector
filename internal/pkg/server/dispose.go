@@ -169,7 +169,9 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			eventMap[resultDataMsg.EventId] = true
 			machineMap[resultDataMsg.MachineIp] = eventMap
 		}
-
+		sceneTestResultDataMsg.Results[resultDataMsg.EventId].ErrorThreshold = resultDataMsg.ErrorThreshold
+		sceneTestResultDataMsg.Results[resultDataMsg.EventId].ResponseThreshold = resultDataMsg.ResponseThreshold
+		sceneTestResultDataMsg.Results[resultDataMsg.EventId].RequestThreshold = resultDataMsg.RequestThreshold
 		sceneTestResultDataMsg.Results[resultDataMsg.EventId].ReceivedBytes += resultDataMsg.ReceivedBytes
 		sceneTestResultDataMsg.Results[resultDataMsg.EventId].SendBytes += resultDataMsg.SendBytes
 		sceneTestResultDataMsg.Results[resultDataMsg.EventId].TotalRequestNum += 1
