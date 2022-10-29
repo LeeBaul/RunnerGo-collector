@@ -197,7 +197,14 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLine = 90
 				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLine = 95
 				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLine = 99
-				sceneTestResultDataMsg.Results[eventId].FiftyRequestTimelineValue = kao.TimeLineCalculate(50, requestTimeList)
+				if sceneTestResultDataMsg.Results[eventId].PercentAge > 0 && sceneTestResultDataMsg.Results[eventId].PercentAge != 101 &&
+					sceneTestResultDataMsg.Results[eventId].PercentAge != 50 && sceneTestResultDataMsg.Results[eventId].PercentAge != 90 &&
+					sceneTestResultDataMsg.Results[eventId].PercentAge != 95 && sceneTestResultDataMsg.Results[eventId].PercentAge != 99 &&
+					sceneTestResultDataMsg.Results[eventId].PercentAge != 100 {
+
+					sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].PercentAge, requestTimeList)
+				}
+				sceneTestResultDataMsg.Results[eventId].FiftyRequestTimelineValue = float64(requestTimeList[len(requestTimeList)/2])
 				sceneTestResultDataMsg.Results[eventId].NinetyRequestTimeLineValue = kao.TimeLineCalculate(90, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].NinetyFiveRequestTimeLineValue = kao.TimeLineCalculate(95, requestTimeList)
 				sceneTestResultDataMsg.Results[eventId].NinetyNineRequestTimeLineValue = kao.TimeLineCalculate(99, requestTimeList)
