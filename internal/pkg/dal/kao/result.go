@@ -46,6 +46,7 @@ type ApiTestResultDataMsg struct {
 	TotalRequestTime               int64   `json:"total_request_time"` // 总响应时间
 	SuccessNum                     int64   `json:"success_num"`
 	ErrorNum                       int64   `json:"error_num"`          // 错误数
+	PercentAge                     int64   `json:"percent_age"`        // 响应时间线
 	ErrorThreshold                 float64 `json:"error_threshold"`    // 自定义错误率
 	RequestThreshold               int64   `json:"request_threshold"`  // Rps（每秒请求数）阈值
 	ResponseThreshold              int64   `json:"response_threshold"` // 响应时间阈值
