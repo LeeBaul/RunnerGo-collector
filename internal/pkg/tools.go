@@ -100,5 +100,10 @@ func SendStopStressReport(machineMap map[string]map[string]bool, reportId string
 		log2.Logger.Error(reportId, " ,发送停止任务失败，http请求失败", err.Error())
 		return
 	}
-	log2.Logger.Error(reportId, "  :停止任务成功：")
+	if res.StatusCode == 200 {
+		log2.Logger.Error(reportId, "  :停止任务成功：")
+	} else {
+		log2.Logger.Error(reportId, "  :停止任务失败：status code:  ", res.StatusCode)
+	}
+
 }
