@@ -28,6 +28,8 @@ redis:
   password: "apipost"
   db: 0
 
+log:
+  path: "/data/logs/kp-runner/kp-collector-info.log"
 
 management:
   address: "https://kpmanage.apipost.cn/management/api/v1/plan/notify_stop_stress"

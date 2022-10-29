@@ -14,6 +14,11 @@ type Config struct {
 	Kafka      Kafka      `yaml:"kafka"`
 	Redis      Redis      `yaml:"redis"`
 	Management Management `yaml:"management"`
+	Log        Log        `yaml:"log"`
+}
+
+type Log struct {
+	Path string `yaml:"path"`
 }
 
 type Http struct {
