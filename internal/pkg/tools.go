@@ -87,23 +87,21 @@ func SendStopStressReport(machineMap map[string]map[string]bool, reportId string
 		log2.Logger.Error(reportId, "   ,json转换失败：  ", err.Error())
 	}
 	res, err := http.Post(conf.Conf.Management.Address, "application/json", strings.NewReader(string(body)))
-
+	defer res.Body.Close()
 	if err != nil {
 		log2.Logger.Error("http请求建立链接失败：", err.Error())
 		return
 	}
-	defer res.Body.Close()
 
-	_, err = ioutil.ReadAll(res.Body)
-
+	responseBody, err := ioutil.ReadAll(res.Body)
 	if err != nil {
-		log2.Logger.Error(reportId, " ,发送停止任务失败，http请求失败", err.Error())
+		log2.Logger.Error("http读取响应信息失败：", err.Error())
 		return
 	}
-	if res.StatusCode == 200 {
-		log2.Logger.Info(reportId, "  :报告停止任务成功：status code: ", res.StatusCode, "请求体：   ", string(body))
+	if strings.Contains(string(responseBody), "\"code\":0,") {
+		log2.Logger.Info(reportId, "  :报告停止任务成功： ", "            响应体：   ", string(responseBody))
 	} else {
-		log2.Logger.Error(reportId, "  :报告停止任务失败：status code:  ", res.StatusCode, "          请求体：   ", string(body))
+		log2.Logger.Error(reportId, "  :报告停止任务失败：  ", "          响应体：   ", string(responseBody))
 	}
 
 }
