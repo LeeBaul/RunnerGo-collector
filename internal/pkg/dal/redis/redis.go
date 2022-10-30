@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"kp-collector/internal/pkg"
 	"kp-collector/internal/pkg/dal/kao"
+	"kp-collector/internal/pkg/log"
+	"strconv"
 	"time"
 )
 import "github.com/go-redis/redis"
@@ -38,7 +40,11 @@ func InsertTestData(machineMap map[string]map[string]bool, sceneTestResultDataMs
 	data := sceneTestResultDataMsg.ToJson()
 	key := fmt.Sprintf("%d:%s:reportData", sceneTestResultDataMsg.PlanId, sceneTestResultDataMsg.ReportId)
 	if sceneTestResultDataMsg.End {
-		pkg.SendStopStressReport(machineMap, sceneTestResultDataMsg.ReportId)
+		reportId, err := strconv.ParseInt(sceneTestResultDataMsg.ReportId, 10, 64)
+		if err != nil {
+			log.Logger.Error("报告Id转数字失败：  ", err)
+		}
+		pkg.SendStopStressReport(machineMap, reportId)
 	}
 
 	err = RDB.LPush(key, data).Err()

@@ -70,11 +70,12 @@ func Post(url, body string) (err error) {
 }
 
 type StopMsg struct {
-	ReportId string   `json:"report_id"`
+	ReportId int64    `json:"report_id"`
 	Machines []string `json:"machines"`
 }
 
-func SendStopStressReport(machineMap map[string]map[string]bool, reportId string) {
+func SendStopStressReport(machineMap map[string]map[string]bool, reportId int64) {
+
 	sm := StopMsg{
 		ReportId: reportId,
 	}
