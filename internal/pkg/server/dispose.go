@@ -65,7 +65,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 	var machineNum = int64(0)
 	var eventMap = make(map[string]bool)
 	var machineMap = make(map[string]map[string]bool)
-	var startTime, index = int64(0), 0
+	var startTime = time.Now().UnixMilli()
 	log2.Logger.Info("分区：", partition, "   ,开始消费消息")
 	for msg := range pc.Messages() {
 
@@ -79,10 +79,6 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			continue
 		}
 
-		if index == 0 {
-			startTime = int64(float64(resultDataMsg.Timestamp) / float64(time.Second))
-		}
-		index++
 		if machineNum == 0 && resultDataMsg.MachineNum != 0 {
 			machineNum = resultDataMsg.MachineNum + 1
 		}
@@ -117,7 +113,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 
 					sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 				}
-				sceneTestResultDataMsg.TimeStamp = resultDataMsg.Timestamp
+				sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
 				if err = redis.InsertTestData(machineMap, sceneTestResultDataMsg); err != nil {
 					log2.Logger.Error("redis写入数据失败:", err)
 				}
@@ -195,9 +191,10 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].ErrorNum += 1
 		}
 		requestTimeListMap[resultDataMsg.EventId] = append(requestTimeListMap[resultDataMsg.EventId], resultDataMsg.RequestTime)
-		sceneTestResultDataMsg.TimeStamp = int64(float64(resultDataMsg.Timestamp) / float64(time.Second))
-		if resultDataMsg.Timestamp-startTime >= 1000 {
-			startTime = resultDataMsg.Timestamp
+		sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
+		endTime := time.Now().UnixMilli()
+		if startTime-endTime >= 1000 {
+			startTime = endTime
 			if sceneTestResultDataMsg.ReportId == "" || sceneTestResultDataMsg.Results == nil {
 				break
 			}
@@ -234,7 +231,6 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				v.SendBytes = 0
 				v.ReceivedBytes = 0
 			}
-			startTime = sceneTestResultDataMsg.TimeStamp
 		}
 
 	}
