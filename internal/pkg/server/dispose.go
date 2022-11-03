@@ -82,7 +82,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 		}
 
 		if startTime == 0 {
-			startTime = resultDataMsg.Timestamp
+			startTime = time.Now().Unix()
 		}
 		if resultDataMsg.End {
 			machineNum = machineNum - 1
@@ -114,7 +114,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 
 					sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 				}
-				sceneTestResultDataMsg.TimeStamp = resultDataMsg.Timestamp
+				sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
 				if err = redis.InsertTestData(machineMap, sceneTestResultDataMsg); err != nil {
 					log2.Logger.Error("redis写入数据失败:", err)
 				}
@@ -173,12 +173,14 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 		} else {
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine = 0
 		}
+
 		if concurrency, ok := machineMap[resultDataMsg.MachineIp][resultDataMsg.EventId]; !ok {
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].Concurrency += resultDataMsg.Concurrency
 			eventMap[resultDataMsg.EventId] = resultDataMsg.Concurrency
 			machineMap[resultDataMsg.MachineIp] = eventMap
 		} else {
 			if concurrency < resultDataMsg.Concurrency {
+
 				machineMap[resultDataMsg.MachineIp][resultDataMsg.EventId] = resultDataMsg.Concurrency
 				sceneTestResultDataMsg.Results[resultDataMsg.EventId].Concurrency += resultDataMsg.Concurrency - concurrency
 			}
@@ -198,9 +200,9 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].ErrorNum += 1
 		}
 		requestTimeListMap[resultDataMsg.EventId] = append(requestTimeListMap[resultDataMsg.EventId], resultDataMsg.RequestTime)
-		sceneTestResultDataMsg.TimeStamp = startTime
-		if resultDataMsg.Timestamp-startTime >= 1 {
-			startTime = resultDataMsg.Timestamp
+		endTime := time.Now().Unix()
+		if endTime-startTime >= 1 {
+			startTime = endTime
 			if sceneTestResultDataMsg.ReportId == "" || sceneTestResultDataMsg.Results == nil {
 				break
 			}
@@ -228,6 +230,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 					sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine, requestTimeList)
 				}
 				sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
+				sceneTestResultDataMsg.TimeStamp = endTime
 			}
 			if err = redis.InsertTestData(machineMap, sceneTestResultDataMsg); err != nil {
 				log2.Logger.Error("测试数据写入redis失败：     ", err)
