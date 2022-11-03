@@ -62,10 +62,9 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 	var requestTimeListMap = make(map[string]kao.RequestTimeList)
 	var resultDataMsg = kao.ResultDataMsg{}
 	var sceneTestResultDataMsg = new(kao.SceneTestResultDataMsg)
-	var machineNum = int64(0)
+	var machineNum, startTime = int64(0), int64(0)
 	var eventMap = make(map[string]int64)
 	var machineMap = make(map[string]map[string]int64)
-	var startTime = time.Now().UnixMilli()
 	log2.Logger.Info("分区：", partition, "   ,开始消费消息")
 	for msg := range pc.Messages() {
 		err := json.Unmarshal(msg.Value, &resultDataMsg)
@@ -82,6 +81,9 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			machineNum = resultDataMsg.MachineNum + 1
 		}
 
+		if startTime == 0 {
+			startTime = resultDataMsg.Timestamp
+		}
 		if resultDataMsg.End {
 			machineNum = machineNum - 1
 			if machineNum == 1 {
@@ -196,9 +198,9 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].ErrorNum += 1
 		}
 		requestTimeListMap[resultDataMsg.EventId] = append(requestTimeListMap[resultDataMsg.EventId], resultDataMsg.RequestTime)
-		sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
-		endTime := time.Now().UnixMilli()
-		if endTime-startTime >= 1000 {
+		sceneTestResultDataMsg.TimeStamp = startTime
+		if resultDataMsg.Timestamp-startTime >= 1 {
+			startTime = resultDataMsg.Timestamp
 			if sceneTestResultDataMsg.ReportId == "" || sceneTestResultDataMsg.Results == nil {
 				break
 			}
@@ -235,7 +237,6 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				v.SendBytes = 0
 				v.ReceivedBytes = 0
 			}
-			startTime = endTime
 		}
 
 	}
