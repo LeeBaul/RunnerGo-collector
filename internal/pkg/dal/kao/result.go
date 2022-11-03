@@ -66,6 +66,7 @@ type ApiTestResultDataMsg struct {
 	SendBytes                      float64 `json:"send_bytes"`     // 发送字节数
 	ReceivedBytes                  float64 `json:"received_bytes"` // 接收字节数
 	Qps                            float64 `json:"qps"`
+	SRps                           float64 `json:"srps"`
 }
 
 // SceneTestResultDataMsg 场景的测试结果
