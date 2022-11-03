@@ -100,9 +100,9 @@ func SendStopStressReport(machineMap map[string]map[string]int64, reportId int64
 		return
 	}
 	if strings.Contains(string(responseBody), "\"code\":0,") {
-		log2.Logger.Info(reportId, "  :报告停止任务成功： ", "            响应体：   ", string(responseBody))
+		log2.Logger.Info(reportId, "  :报告停止任务成功： ", "请求体：", string(body), "            响应体：   ", string(responseBody))
 	} else {
-		log2.Logger.Error(reportId, "  :报告停止任务失败：  ", "          响应体：   ", string(responseBody))
+		log2.Logger.Error(reportId, "  :报告停止任务失败：  ", "请求体：", string(body), "          响应体：   ", string(responseBody))
 	}
 
 }
