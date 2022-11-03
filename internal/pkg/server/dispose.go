@@ -80,7 +80,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 		}
 
 		if index == 0 {
-			startTime = resultDataMsg.Timestamp
+			startTime = int64(float64(resultDataMsg.Timestamp) / float64(time.Second))
 		}
 		index++
 		if machineNum == 0 && resultDataMsg.MachineNum != 0 {
@@ -195,7 +195,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].ErrorNum += 1
 		}
 		requestTimeListMap[resultDataMsg.EventId] = append(requestTimeListMap[resultDataMsg.EventId], resultDataMsg.RequestTime)
-		sceneTestResultDataMsg.TimeStamp = resultDataMsg.Timestamp
+		sceneTestResultDataMsg.TimeStamp = int64(float64(resultDataMsg.Timestamp) / float64(time.Second))
 		if resultDataMsg.Timestamp-startTime >= 1000 {
 			startTime = resultDataMsg.Timestamp
 			if sceneTestResultDataMsg.ReportId == "" || sceneTestResultDataMsg.Results == nil {
