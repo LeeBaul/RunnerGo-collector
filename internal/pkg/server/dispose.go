@@ -114,7 +114,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 
 					sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 				}
-				sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
+				sceneTestResultDataMsg.TimeStamp = resultDataMsg.Timestamp
 				if err = redis.InsertTestData(machineMap, sceneTestResultDataMsg); err != nil {
 					log2.Logger.Error("redis写入数据失败:", err)
 				}
