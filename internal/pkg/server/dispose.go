@@ -63,8 +63,8 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 	var resultDataMsg = kao.ResultDataMsg{}
 	var sceneTestResultDataMsg = new(kao.SceneTestResultDataMsg)
 	var machineNum = int64(0)
-	var eventMap = make(map[string]bool)
-	var machineMap = make(map[string]map[string]bool)
+	var eventMap = make(map[string]int64)
+	var machineMap = make(map[string]map[string]int64)
 	var startTime = time.Now().UnixMilli()
 	log2.Logger.Info("分区：", partition, "   ,开始消费消息")
 	for msg := range pc.Messages() {
@@ -172,10 +172,16 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 		} else {
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].CustomRequestTimeLine = 0
 		}
-		if _, ok := machineMap[resultDataMsg.MachineIp][resultDataMsg.EventId]; !ok {
+		if concurrency, ok := machineMap[resultDataMsg.MachineIp][resultDataMsg.EventId]; !ok {
 			sceneTestResultDataMsg.Results[resultDataMsg.EventId].Concurrency += resultDataMsg.Concurrency
-			eventMap[resultDataMsg.EventId] = true
+			eventMap[resultDataMsg.EventId] = resultDataMsg.Concurrency
 			machineMap[resultDataMsg.MachineIp] = eventMap
+		} else {
+			if concurrency < resultDataMsg.Concurrency {
+				machineMap[resultDataMsg.MachineIp][resultDataMsg.EventId] = resultDataMsg.Concurrency
+				sceneTestResultDataMsg.Results[resultDataMsg.EventId].Concurrency = resultDataMsg.Concurrency - concurrency
+			}
+
 		}
 		sceneTestResultDataMsg.Results[resultDataMsg.EventId].PercentAge = resultDataMsg.PercentAge
 		sceneTestResultDataMsg.Results[resultDataMsg.EventId].ErrorThreshold = resultDataMsg.ErrorThreshold
@@ -194,7 +200,6 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 		sceneTestResultDataMsg.TimeStamp = time.Now().Unix()
 		endTime := time.Now().UnixMilli()
 		if startTime-endTime >= 1000 {
-			startTime = endTime
 			if sceneTestResultDataMsg.ReportId == "" || sceneTestResultDataMsg.Results == nil {
 				break
 			}
@@ -231,6 +236,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				v.SendBytes = 0
 				v.ReceivedBytes = 0
 			}
+			startTime = time.Now().UnixMilli()
 		}
 
 	}

@@ -36,7 +36,7 @@ func UpdatePartitionStatus(key string, partition int32) (err error) {
 	return
 }
 
-func InsertTestData(machineMap map[string]map[string]bool, sceneTestResultDataMsg *kao.SceneTestResultDataMsg) (err error) {
+func InsertTestData(machineMap map[string]map[string]int64, sceneTestResultDataMsg *kao.SceneTestResultDataMsg) (err error) {
 	data := sceneTestResultDataMsg.ToJson()
 	key := fmt.Sprintf("%d:%s:reportData", sceneTestResultDataMsg.PlanId, sceneTestResultDataMsg.ReportId)
 	if sceneTestResultDataMsg.End {

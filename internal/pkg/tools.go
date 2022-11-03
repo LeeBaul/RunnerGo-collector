@@ -74,7 +74,7 @@ type StopMsg struct {
 	Machines []string `json:"machines"`
 }
 
-func SendStopStressReport(machineMap map[string]map[string]bool, reportId int64) {
+func SendStopStressReport(machineMap map[string]map[string]int64, reportId int64) {
 
 	sm := StopMsg{
 		ReportId: reportId,
