@@ -7,6 +7,7 @@ import (
 
 // ResultDataMsg 请求结果数据结构
 type ResultDataMsg struct {
+	Start             bool    `json:"start"`
 	End               bool    `json:"end"` // 结束标记
 	Name              string  `json:"name"`
 	TeamId            int64   `json:"team_id"`
