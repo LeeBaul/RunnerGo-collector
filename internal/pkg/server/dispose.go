@@ -85,7 +85,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			startTime = resultDataMsg.Timestamp
 		}
 
-		if resultDataMsg.Start && !resultDataMsg.End {
+		if resultDataMsg.Start {
 			continue
 		}
 
@@ -95,7 +95,9 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				sceneTestResultDataMsg.End = true
 				for eventId, requestTimeList := range requestTimeListMap {
 					sort.Sort(requestTimeList)
-					sceneTestResultDataMsg.Results[eventId].AvgRequestTime = float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)
+					if sceneTestResultDataMsg.Results[eventId].TotalRequestNum != 0 {
+						sceneTestResultDataMsg.Results[eventId].AvgRequestTime = float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)
+					}
 					sceneTestResultDataMsg.Results[eventId].MaxRequestTime = float64(requestTimeList[len(requestTimeList)-1])
 					sceneTestResultDataMsg.Results[eventId].MinRequestTime = float64(requestTimeList[0])
 					sceneTestResultDataMsg.Results[eventId].FiftyRequestTimeline = 50
@@ -116,9 +118,11 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 					if sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine != 0 {
 						sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine, requestTimeList)
 					}
+					if sceneTestResultDataMsg.Results[eventId].TotalRequestTime != 0 {
+						sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
+						sceneTestResultDataMsg.Results[eventId].SRps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].SuccessNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
+					}
 
-					sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
-					sceneTestResultDataMsg.Results[eventId].SRps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].SuccessNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
 				}
 				sceneTestResultDataMsg.TimeStamp = resultDataMsg.Timestamp / 1000
 				if err = redis.InsertTestData(machineMap, sceneTestResultDataMsg); err != nil {
@@ -213,7 +217,10 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			}
 			for eventId, requestTimeList := range requestTimeListMap {
 				sort.Sort(requestTimeList)
-				sceneTestResultDataMsg.Results[eventId].AvgRequestTime = float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)
+				if sceneTestResultDataMsg.Results[eventId].TotalRequestNum != 0 {
+					sceneTestResultDataMsg.Results[eventId].AvgRequestTime = float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum)
+				}
+
 				sceneTestResultDataMsg.Results[eventId].MaxRequestTime = float64(requestTimeList[len(requestTimeList)-1])
 				sceneTestResultDataMsg.Results[eventId].MinRequestTime = float64(requestTimeList[0])
 				sceneTestResultDataMsg.Results[eventId].FiftyRequestTimeline = 50
@@ -234,8 +241,11 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 				if sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine != 0 {
 					sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLineValue = kao.TimeLineCalculate(sceneTestResultDataMsg.Results[eventId].CustomRequestTimeLine, requestTimeList)
 				}
-				sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
-				sceneTestResultDataMsg.Results[eventId].SRps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].SuccessNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
+				if sceneTestResultDataMsg.Results[eventId].TotalRequestTime != 0 {
+					sceneTestResultDataMsg.Results[eventId].Qps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].TotalRequestNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
+					sceneTestResultDataMsg.Results[eventId].SRps, _ = decimal.NewFromFloat(float64(sceneTestResultDataMsg.Results[eventId].SuccessNum) * float64(time.Second) / float64(sceneTestResultDataMsg.Results[eventId].TotalRequestTime)).Round(2).Float64()
+				}
+
 				sceneTestResultDataMsg.TimeStamp = startTime / 1000
 			}
 			if err = redis.InsertTestData(machineMap, sceneTestResultDataMsg); err != nil {
