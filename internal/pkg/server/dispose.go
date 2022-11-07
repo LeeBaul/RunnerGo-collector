@@ -86,7 +86,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			startTime = resultDataMsg.Timestamp
 		}
 
-		if resultDataMsg.Start {
+		if resultDataMsg.Start && !resultDataMsg.End {
 			continue
 		}
 
