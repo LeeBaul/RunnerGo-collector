@@ -1,6 +1,9 @@
 package pkg
 
 import (
+	services "RunnerGo-collector/api"
+	"RunnerGo-collector/internal/pkg/conf"
+	log2 "RunnerGo-collector/internal/pkg/log"
 	"context"
 	"crypto/tls"
 	"crypto/x509"
@@ -10,9 +13,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"io/ioutil"
-	services "kp-collector/api"
-	"kp-collector/internal/pkg/conf"
-	log2 "kp-collector/internal/pkg/log"
 	"net/http"
 	"strconv"
 	"strings"

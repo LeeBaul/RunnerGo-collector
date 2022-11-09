@@ -1,9 +1,9 @@
 package internal
 
 import (
-	"kp-collector/internal/pkg/conf"
-	"kp-collector/internal/pkg/dal/redis"
-	log "kp-collector/internal/pkg/log"
+	"RunnerGo-collector/internal/pkg/conf"
+	"RunnerGo-collector/internal/pkg/dal/redis"
+	log "RunnerGo-collector/internal/pkg/log"
 )
 
 func InitProjects() {
