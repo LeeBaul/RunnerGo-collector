@@ -1,2 +1,2 @@
-# kp-collector
+# RunnerGo-collector
 
