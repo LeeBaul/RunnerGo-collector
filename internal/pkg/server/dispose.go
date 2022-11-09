@@ -1,14 +1,14 @@
 package server
 
 import (
+	"RunnerGo-collector/internal/pkg/conf"
+	"RunnerGo-collector/internal/pkg/dal/kao"
+	"RunnerGo-collector/internal/pkg/dal/redis"
+	log2 "RunnerGo-collector/internal/pkg/log"
 	"encoding/json"
 	"fmt"
 	"github.com/Shopify/sarama"
 	"github.com/shopspring/decimal"
-	"kp-collector/internal/pkg/conf"
-	"kp-collector/internal/pkg/dal/kao"
-	"kp-collector/internal/pkg/dal/redis"
-	log2 "kp-collector/internal/pkg/log"
 	"sort"
 	"sync"
 	"time"

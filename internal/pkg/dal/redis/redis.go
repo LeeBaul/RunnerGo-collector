@@ -1,10 +1,10 @@
 package redis
 
 import (
+	"RunnerGo-collector/internal/pkg"
+	"RunnerGo-collector/internal/pkg/dal/kao"
+	"RunnerGo-collector/internal/pkg/log"
 	"fmt"
-	"kp-collector/internal/pkg"
-	"kp-collector/internal/pkg/dal/kao"
-	"kp-collector/internal/pkg/log"
 	"strconv"
 	"time"
 )

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"kp-collector/internal"
-	"kp-collector/internal/pkg/conf"
-	log2 "kp-collector/internal/pkg/log"
-	"kp-collector/internal/pkg/server"
+	"RunnerGo-collector/internal"
+	"RunnerGo-collector/internal/pkg/conf"
+	log2 "RunnerGo-collector/internal/pkg/log"
+	"RunnerGo-collector/internal/pkg/server"
 	"net/http"
 	"os"
 	"os/signal"

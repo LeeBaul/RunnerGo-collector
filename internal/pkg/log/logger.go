@@ -1,10 +1,10 @@
 package log
 
 import (
+	"RunnerGo-collector/internal/pkg/conf"
 	"github.com/natefinch/lumberjack"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"kp-collector/internal/pkg/conf"
 	"os"
 )
 

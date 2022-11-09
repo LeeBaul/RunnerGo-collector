@@ -1,11 +1,11 @@
 package pkg
 
 import (
+	services "RunnerGo-collector/api"
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
 	"github.com/pkg/errors"
-	services "kp-collector/api"
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
