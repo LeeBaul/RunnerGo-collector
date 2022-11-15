@@ -54,14 +54,29 @@ func SendStopMsg(host, reportId string) {
 }
 
 func Post(url, body string) (err error) {
+	strs := strings.Split(url, "?")
+	url = strs[0]
+	request, err := http.NewRequest("GET", url, strings.NewReader(body))
+	querys := ""
+	if len(strs) > 0 {
+		querys = strs[1]
+	}
+	queryList := strings.Split(querys, "&")
+	query := request.URL.Query()
+	for i := 0; i < len(queryList); i++ {
+		s := strings.Split(queryList[i], "=")
+		query.Add(s[0], s[1])
+	}
+	request.URL.RawQuery = query.Encode()
 
-	request, err := http.NewRequest("PUT", url, strings.NewReader(body))
 	if err != nil {
 		fmt.Println("http请求创建失败：   ", err)
 		return
 	}
+	fmt.Println("url:    ", url)
 	client := &http.Client{}
-	_, err = client.Do(request)
+	resp, err := client.Do(request)
+	fmt.Println("response:     ", resp.Body)
 	if err != nil {
 		fmt.Println("http发送请求失败：    ", err)
 		return
