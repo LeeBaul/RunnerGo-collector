@@ -189,7 +189,7 @@ func ReceiveMessage(pc sarama.PartitionConsumer, partitionMap *sync.Map, partiti
 			eventMap[resultDataMsg.EventId] = resultDataMsg.Concurrency
 			machineMap[resultDataMsg.MachineIp] = eventMap
 		} else {
-			if concurrency < resultDataMsg.Concurrency {
+			if concurrency != resultDataMsg.Concurrency {
 				machineMap[resultDataMsg.MachineIp][resultDataMsg.EventId] = resultDataMsg.Concurrency
 				sceneTestResultDataMsg.Results[resultDataMsg.EventId].Concurrency += resultDataMsg.Concurrency - concurrency
 			}
