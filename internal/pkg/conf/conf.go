@@ -37,8 +37,8 @@ type Kafka struct {
 	Host  string `yaml:"host"`
 	Topic string `yaml:"topic"`
 	Key   string `yaml:"key"`
-	Start int64  `yaml:"start"`
-	End   int64  `yaml:"end"`
+	Start int32  `yaml:"start"`
+	End   int32  `yaml:"end"`
 }
 
 type Redis struct {

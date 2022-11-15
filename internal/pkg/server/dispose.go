@@ -16,38 +16,38 @@ import (
 
 func Execute(host string) {
 	var partitionMap = new(sync.Map)
-	saramaConfig := sarama.NewConfig()
-	saramaConfig.Consumer.Return.Errors = true
+	start := conf.Conf.Kafka.Start
+	end := conf.Conf.Kafka.End
 	topic := conf.Conf.Kafka.Topic
-	consumer, consumerErr := sarama.NewConsumer([]string{host}, sarama.NewConfig())
-	if consumerErr != nil {
-		log2.Logger.Error("topic  :"+topic+", 创建消费者失败:", consumerErr)
-		return
+	var list []int32
+	for i := start; i <= end; i++ {
+		list = append(list, i)
 	}
-	partitions, consumerErr := consumer.Partitions(topic)
-	if consumerErr != nil {
-		log2.Logger.Error("获取", conf.Conf.Kafka.Topic, "主题失败：", consumerErr)
-		if consumerErr = consumer.Close(); consumerErr != nil {
-			log2.Logger.Error("关闭消费者失败：", consumerErr)
-		}
-	}
+
 	for {
-		if partitions == nil || len(partitions) < 1 {
-			continue
-		}
-		for _, partition := range partitions {
-			if _, ok := partitionMap.Load(partition); ok {
+		for _, value := range list {
+			if _, ok := partitionMap.Load(value); ok {
 				continue
 			}
-			partitionMap.Store(partition, true)
-			pc, err := consumer.ConsumePartition(topic, partition, sarama.OffsetNewest)
+			saramaConfig := sarama.NewConfig()
+			saramaConfig.Consumer.Return.Errors = true
+
+			consumer, consumerErr := sarama.NewConsumer([]string{host}, sarama.NewConfig())
+			if consumerErr != nil {
+				log2.Logger.Error("topic  :"+topic+", 创建消费者失败:", consumerErr)
+				return
+			}
+			partitionMap.Store(value, true)
+			pc, err := consumer.ConsumePartition(topic, value, sarama.OffsetNewest)
 			pc.IsPaused()
 			if err != nil {
 				log2.Logger.Error("创建消费者失败：    ", err)
 				break
 			}
-			go ReceiveMessage(pc, partitionMap, partition)
+			go ReceiveMessage(pc, partitionMap, value)
+
 		}
+
 	}
 
 }
