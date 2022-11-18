@@ -11,7 +11,8 @@ import (
 import "github.com/go-redis/redis"
 
 var (
-	RDB          *redis.Client
+	RDB1         *redis.Client
+	RDB2         *redis.Client
 	timeDuration = 3 * time.Second
 )
 
@@ -19,20 +20,30 @@ type RedisClient struct {
 	Client *redis.Client
 }
 
-func InitRedisClient(addr, password string, db int64) (err error) {
-	RDB = redis.NewClient(
+func InitRedisClient(addr1, password1 string, db1 int64, addr2, password2 string, db2 int64) (err error) {
+	RDB1 = redis.NewClient(
 		&redis.Options{
-			Addr:     addr,
-			Password: password,
-			DB:       int(db),
+			Addr:     addr1,
+			Password: password1,
+			DB:       int(db1),
 		})
-	_, err = RDB.Ping().Result()
+	_, err = RDB1.Ping().Result()
+	if err != nil {
+		return
+	}
+	RDB2 = redis.NewClient(
+		&redis.Options{
+			Addr:     addr2,
+			Password: password2,
+			DB:       int(db2),
+		})
+	_, err = RDB2.Ping().Result()
 	return err
 }
 
 func UpdatePartitionStatus(key string, partition int32) (err error) {
 	field := fmt.Sprintf("%d", partition)
-	err = RDB.HDel(key, field).Err()
+	err = RDB2.HDel(key, field).Err()
 	return
 }
 
@@ -47,7 +58,7 @@ func InsertTestData(machineMap map[string]map[string]int64, sceneTestResultDataM
 		pkg.SendStopStressReport(machineMap, reportId)
 	}
 
-	err = RDB.LPush(key, data).Err()
+	err = RDB1.LPush(key, data).Err()
 	if err != nil {
 		return
 	}

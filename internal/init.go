@@ -10,5 +10,5 @@ func InitProjects() {
 	conf.MustInitConf()
 	log.InitLogger()
 	//es.InitEsClient(conf.Conf.ES.Host, conf.Conf.ES.Username, conf.Conf.ES.Password)
-	redis.InitRedisClient(conf.Conf.Redis.Address, conf.Conf.Redis.Password, conf.Conf.Redis.DB)
+	redis.InitRedisClient(conf.Conf.Redis1.Address, conf.Conf.Redis1.Password, conf.Conf.Redis1.DB, conf.Conf.Redis2.Address, conf.Conf.Redis2.Password, conf.Conf.Redis2.DB)
 }
