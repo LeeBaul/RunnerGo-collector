@@ -3,33 +3,33 @@ http:
 
 
 mongodb:
-  dsn: "mongodb://runnergo:qt0goKAHtwy4c0Gz@dds-2ze9902a2d29a7541.mongodb.rds.aliyuncs.com:3717/runnergo?replicaSet=mgset-63376890"
-  database: "runnergo"
+  dsn:
+  database:
 
 
 kafka:
-  host: "alikafka-pre-cn-tl32yargx002-1-vpc.alikafka.aliyuncs.com:9092"
+  host:
   topic: "report"
   key: "kafka:report:partition"
   start: 0
   end: 9
 
 grpc:
-  host: "kpcontroller.apipost.cn:443"
+  host:
 
 
 redis1:
-  address: "r-2zeygktm7wb4nd5b46.redis.rds.aliyuncs.com:6379"
-  password: "r-2zeygktm7wb4nd5b46"
+  address:
+  password:
   db: 0
 
 redis2:
-  address: "r-2zeyyzpdgra56jeqcz.redis.rds.aliyuncs.com:6379"
-  password: "r-2zeyyzpdgra56jeqcz"
+  address:
+  password:
   db: 0
 
 log:
   path: "/data/logs/runnergo/runnergo-collector-info.log"
 
 management:
-  address: "https://pre-manage.runnergo.cn/management/api/v1/plan/notify_stop_stress"
+  address:
