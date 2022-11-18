@@ -1,9 +1,9 @@
 package server
 
 import (
+	log2 "RunnerGo-collector/internal/pkg/log"
 	"fmt"
 	"github.com/Shopify/sarama"
-	log2 "kp-collector/internal/pkg/log"
 	"testing"
 )
 
@@ -26,7 +26,7 @@ func (rt A) Swap(i int, j int) {
 }
 
 func TestSendStopMsg(t *testing.T) {
-	consumer, err := sarama.NewConsumer([]string{"172.17.101.188:9092"}, sarama.NewConfig())
+	consumer, err := sarama.NewConsumer([]string{""}, sarama.NewConfig())
 	if err != nil {
 		fmt.Println("consumer connect err:", err)
 		return
@@ -62,8 +62,8 @@ func TestSendStopMsg(t *testing.T) {
 func TestExecute(t *testing.T) {
 	saramaConfig := sarama.NewConfig()
 	saramaConfig.Consumer.Return.Errors = true
-	client, err := sarama.NewClient([]string{"172.17.101.188:9092"}, saramaConfig)
-	consumer, err := sarama.NewConsumer([]string{"172.17.101.188:9092"}, saramaConfig)
+	client, err := sarama.NewClient([]string{""}, saramaConfig)
+	consumer, err := sarama.NewConsumer([]string{""}, saramaConfig)
 	if err != nil {
 		log2.Logger.Error("创建kafka客户端失败:", err)
 		return
@@ -94,7 +94,7 @@ func TestExecute(t *testing.T) {
 		//	if topic == "__consumer_offsets" {
 		//		continue
 		//	}
-		//	ca, errNewClusterAdmin := sarama.NewClusterAdmin([]string{"172.17.101.188:9092"}, saramaConfig)
+		//	ca, errNewClusterAdmin := sarama.NewClusterAdmin([]string{""}, saramaConfig)
 		//	if errNewClusterAdmin != nil {
 		//		log2.Logger.Error("创建NewClusterAdmin失败：", errNewClusterAdmin)
 		//	}
@@ -108,7 +108,7 @@ func TestExecute(t *testing.T) {
 	}
 	//
 
-	//client2, err := sarama.NewClient([]string{"172.17.101.188:9092"}, saramaConfig)
+	//client2, err := sarama.NewClient([]string{""}, saramaConfig)
 	//if err != nil {
 	//	log2.Logger.Error("创建kafka客户端失败:", err)
 	//	return

@@ -10,8 +10,8 @@ import (
 func TestInsert(t *testing.T) {
 	rdb := redis.NewClient(
 		&redis.Options{
-			Addr:     "172.17.101.191:6398",
-			Password: "apipost",
+			Addr:     "",
+			Password: "",
 			DB:       0,
 		})
 
