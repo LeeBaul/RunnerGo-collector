@@ -49,7 +49,7 @@ type Redis struct {
 
 func MustInitConf() {
 	var configFile string
-	flag.StringVar(&configFile, "c", "./dev.yaml", "app config file.")
+	flag.StringVar(&configFile, "c", "./prd.yaml", "app config file.")
 	if !flag.Parsed() {
 		flag.Parse()
 	}
