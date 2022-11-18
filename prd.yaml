@@ -3,7 +3,7 @@ http:
 
 
 mongodb:
-  dsn: "mongodb://runnergo:dds-2ze9902a2d29a7541745-pub.mongodb.rds.aliyuncs.com:3717/runnergo?replicaSet=mgset-63376890"
+  dsn: "mongodb://runnergo:qt0goKAHtwy4c0Gz@dds-2ze9902a2d29a7541.mongodb.rds.aliyuncs.com:3717/runnergo?replicaSet=mgset-63376890"
   database: "runnergo"
 
 
